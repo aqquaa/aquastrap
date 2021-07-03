@@ -1,0 +1,45 @@
+{
+    "name": "devsrv/aquastrap",
+    "description": "use laravel blade component methods as javascript function for XHR",
+    "keywords": [
+        "devsrv",
+        "Laravel",
+        "Blade Component"
+    ],
+    "homepage": "https://github.com/devsrv/laravel-inplace",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sourav Rakshit",
+            "email": "hello@itsrav.dev",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "illuminate/contracts": "^7.0 || ^8.0",
+        "illuminate/routing": "^7.0 || ^8.0",
+        "illuminate/support": "^7.0 || ^8.0",
+        "illuminate/view": "^7.0 || ^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Devsrv\\Aquastrap\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Devsrv\\Aquastrap\\AquastrapServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
