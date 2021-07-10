@@ -43,7 +43,7 @@ trait ExposeMethods
     public function drips() {
         $methodsToExpose = RouteLoader::methodsToBind(static::class);
 
-        return collect($methodsToExpose)
+        $routes = collect($methodsToExpose)
             ->mapWithKeys(function($method) {
                 try {
                     $url = action([static::class, $method]);
@@ -53,5 +53,7 @@ trait ExposeMethods
                     return [];
                 }
             });
+
+        return ['routes' => $routes, 'component' => str_replace('\\', "\\\\", (string) static::class) ];
     }
 }
