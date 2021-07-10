@@ -38,7 +38,7 @@ trait ExposeMethods
         return $this->middleware;
     }
 
-    public function getComponentPublicMethods() {
+    public function drips() {
         $hash = md5(get_class($this));
 
         $methodsToExpose = array_diff(
@@ -47,6 +47,6 @@ trait ExposeMethods
         );
 
         return collect($methodsToExpose)
-        ->mapWithKeys(fn($method) => [$method => route('aquastrap.' . $hash . '@' . $method)]);
+            ->mapWithKeys(fn($method) => [$method => route('aquastrap.' . $hash . '@' . $method)]);
     }
 }
