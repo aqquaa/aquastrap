@@ -89,7 +89,7 @@ class Util
     protected static function ignorePublicMethods()
     {
         return array_merge([
-            'getComponentPublicMethods',
+            'drips',
             'getMiddleware',
             'routes'
         ], get_class_methods(\Illuminate\View\Component::class));
