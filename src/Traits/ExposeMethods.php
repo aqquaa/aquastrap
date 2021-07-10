@@ -2,8 +2,10 @@
 
 namespace Devsrv\Aquastrap\Traits;
 
-use Devsrv\Aquastrap\Util;
+use InvalidArgumentException;
 use Illuminate\Routing\ControllerMiddlewareOptions;
+use Illuminate\Routing\Exceptions\UrlGenerationException;
+use \Facades\Devsrv\Aquastrap\RouteLoader;
 
 trait ExposeMethods
 {
@@ -39,14 +41,17 @@ trait ExposeMethods
     }
 
     public function drips() {
-        $hash = md5(get_class($this));
-
-        $methodsToExpose = array_diff(
-            Util::getPublicMethods(get_class($this)),
-            defined(get_class($this) . '::SKIP_ROUTES') ? self::SKIP_ROUTES : []
-        );
+        $methodsToExpose = RouteLoader::methodsToBind(static::class);
 
         return collect($methodsToExpose)
-            ->mapWithKeys(fn($method) => [$method => route('aquastrap.' . $hash . '@' . $method)]);
+            ->mapWithKeys(function($method) {
+                try {
+                    $url = action([static::class, $method]);
+                    return [ $method => $url ];
+                } catch (InvalidArgumentException|UrlGenerationException $th) {
+                    // can't figure method url
+                    return [];
+                }
+            });
     }
 }
