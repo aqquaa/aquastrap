@@ -4,6 +4,7 @@ namespace Devsrv\Aquastrap;
 
 use Illuminate\Support\ServiceProvider;
 use Devsrv\Aquastrap\RouteLoader;
+use Illuminate\Support\Facades\Blade;
 
 class AquastrapServiceProvider extends ServiceProvider
 {
@@ -12,6 +13,30 @@ class AquastrapServiceProvider extends ServiceProvider
         if(! $this->app->routesAreCached()) {
             (new RouteLoader)->registerRoutes();
         }
+
+        Blade::directive('aqua', function ($drips) {
+            return "<?php 
+            echo \Devsrv\Aquastrap\AquaDirective::networkHandler($drips);
+            ?>";
+        });
+
+        Blade::directive('aquasync', function () {
+            return "<?php 
+            echo \Devsrv\Aquastrap\AquaDirective::scripts();
+            ?>";
+        });
+
+        Blade::directive('aquaconfig', function ($drips) {
+            return "<?php 
+            echo \Devsrv\Aquastrap\AquaDirective::setComponentConfig($drips);
+            ?>";
+        });
+
+        Blade::directive('aquaglobal', function () {
+            return "<?php 
+            echo \Devsrv\Aquastrap\AquaDirective::setGlobalConfig();
+            ?>";
+        });
     }
 
     /**
