@@ -5,9 +5,7 @@ namespace Devsrv\Aquastrap;
 class AquaDirective
 {
     public static function networkHandler($drips) {
-        $routes = str_replace('"', '\'', json_encode($drips()['routes']));
-
-        return "_aquaGenerate(". $routes .", '". $drips()['component'] ."')";
+        return "_aquaGenerate('". $drips()['component'] ."')";
     }
 
     public static function setComponentConfig($drips) {
