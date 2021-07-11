@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Illuminate\Routing\ControllerMiddlewareOptions;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
 use \Facades\Devsrv\Aquastrap\RouteLoader;
+use Illuminate\Support\Str;
 
 trait ExposeMethods
 {
@@ -41,19 +42,11 @@ trait ExposeMethods
     }
 
     public function drips() {
-        $methodsToExpose = RouteLoader::methodsToBind(static::class);
+        $classWithNamespace = (string) static::class;
+        $classWithNamespace = str_replace('App\\View\\Components\\', '', $classWithNamespace);
 
-        $routes = collect($methodsToExpose)
-            ->mapWithKeys(function($method) {
-                try {
-                    $url = action([static::class, $method]);
-                    return [ $method => $url ];
-                } catch (InvalidArgumentException|UrlGenerationException $th) {
-                    // can't figure method url
-                    return [];
-                }
-            });
+        $id = collect(explode('\\', $classWithNamespace))->map(fn($p) => Str::kebab($p))->implode('.');
 
-        return ['routes' => $routes, 'component' => str_replace('\\', "\\\\", (string) static::class) ];
+        return ['component' => $id ];
     }
 }
