@@ -9,9 +9,7 @@ class AquaDirective
     }
 
     public static function setComponentConfig($drips) {
-        $component_id = $drips()['component'];
-
-        return "_registerAquaConfig('". $component_id ."')";
+        return "_registerAquaConfig('". $drips()['component'] ."')";
     }
 
     public static function scripts() {
