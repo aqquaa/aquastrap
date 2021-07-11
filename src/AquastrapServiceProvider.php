@@ -31,12 +31,6 @@ class AquastrapServiceProvider extends ServiceProvider
             echo \Devsrv\Aquastrap\AquaDirective::setComponentConfig($drips);
             ?>";
         });
-
-        Blade::directive('aquaglobal', function () {
-            return "<?php 
-            echo \Devsrv\Aquastrap\AquaDirective::setGlobalConfig();
-            ?>";
-        });
     }
 
     /**
