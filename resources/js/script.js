@@ -1,5 +1,28 @@
 window._aquastrap =  window._aquastrap || {
-    component: [],
+    component: [
+        {
+            id: 'article',
+            routes: {
+                "update": "http://127.0.0.1:8000/articles/foo/update",
+                "delete": "http://127.0.0.1:8000/articles/foo/delete"
+            },
+            config: {}
+        },
+        {
+            id: 'post',
+            routes: {
+                "delete": "http://127.0.0.1:8000/aquastrap/145b16fffaf48b09d39c7339d77c3ae6/delete"
+            },
+            config: {}
+        },
+        {
+            id: 'folder.my-component',
+            routes: {
+                "delete": "http://127.0.0.1:8000/aquastrap/d5796c8780c470a876faf663ba4bf5da/delete"
+            },
+            config: {}
+        }
+    ],
     config: {success: () => {}, error: () => {}}
 };
 
@@ -12,6 +35,20 @@ window.Aquastrap = {
         _setAquaConfig({error: errCallback});
         return this;
     },
+    component(id) {
+        return {
+            routes: _findComponentById(id).routes,
+            onSuccess(succesCallback) {
+                _setAquaConfig({success: succesCallback}, id);
+                return this;
+            },
+            onError(errCallback) {
+                _setAquaConfig({error: errCallback}, id);
+                return this;
+            },
+            ..._replicatePublicMethods(_findComponentById(id).routes, id)
+        }
+    }
 };
 
 const _aquaCore = {
@@ -20,6 +57,7 @@ const _aquaCore = {
             ...window._aquastrap.component,
             {
                 id: id, 
+                routes: {},
                 config: {}
             }
         ];
@@ -107,8 +145,9 @@ function _setAquaConfig(configs, id = '') {
         return;
     }
 
-    const componentIndex = window._aquastrap.component.findIndex(c => c.id === id);
-    if(componentIndex === -1) {
+    try {
+        _findComponentById(id);
+    } catch (error) {
         _aquaCore.createNewComponent(id);
     }
 
