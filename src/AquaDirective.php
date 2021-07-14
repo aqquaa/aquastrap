@@ -13,11 +13,9 @@ class AquaDirective
     }
 
     public static function scripts() {
-        $util = file_get_contents(__DIR__ . '/../resources/js/util.js');
-        $script = file_get_contents(__DIR__ . '/../resources/js/script.js');
-        $network = file_get_contents(__DIR__ . '/../resources/js/network.js');
-        $public = file_get_contents(__DIR__ . '/../resources/js/public.js');
+        $routes = asset('vendor/aquastrap/js/routes.js');
+        $main = asset('vendor/aquastrap/js/index.js');
 
-        return '<script>' . $util . $network . $script . $public . '</script>';
+        return '<script src="'.$routes.'"></script><script src="'.$main.'"></script>';
     }
 }
