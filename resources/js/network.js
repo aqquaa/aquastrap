@@ -1,5 +1,5 @@
 function _manifestNetworkHandler(url, successCallback = null, errorCallback = null) {
-    return async (formData = {}) => {
+    return async (formData = {}, type = 'POST') => {
         let options = {
             headers: {
                 Accept: 'application/json',
@@ -8,7 +8,7 @@ function _manifestNetworkHandler(url, successCallback = null, errorCallback = nu
                 "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
             },
             credentials: "same-origin",
-            method: 'POST',
+            method: type,
             body: JSON.stringify(formData),
         };
 
