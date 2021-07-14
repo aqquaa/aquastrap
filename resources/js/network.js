@@ -35,7 +35,7 @@ function _manifestNetworkHandler(url, successCallback = null, errorCallback = nu
     };
 }
 
-function _replicatePublicMethods(routes, id, successCallback = null, errorCallback = null) {
+export function _replicatePublicMethods(routes, id, successCallback = null, errorCallback = null) {
     let methods = {};
 
     for (const [name, url] of Object.entries(routes)) {

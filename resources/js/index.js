@@ -1,4 +1,33 @@
-function _aquaGenerate(id) {
+import { _findComponentById } from './helper/util';
+import { _setAquaConfig } from './core/index';
+import { _replicatePublicMethods } from './network';
+
+window.Aquastrap = {
+    onSuccess(succesCallback) {
+        _setAquaConfig({success: succesCallback});
+        return this;
+    },
+    onError(errCallback) {
+        _setAquaConfig({error: errCallback});
+        return this;
+    },
+    component(id) {
+        return {
+            routes: _findComponentById(id).routes,
+            onSuccess(succesCallback) {
+                _setAquaConfig({success: succesCallback}, id);
+                return this;
+            },
+            onError(errCallback) {
+                _setAquaConfig({error: errCallback}, id);
+                return this;
+            },
+            ..._replicatePublicMethods(_findComponentById(id).routes, id)
+        }
+    }
+};
+
+window._aquaGenerate = function (id) {
     const methodsAccessor = _replicatePublicMethods(_findComponentById(id).routes, id);
 
     let hook = {};
@@ -35,7 +64,7 @@ function _aquaGenerate(id) {
     }
 }
 
-function _registerAquaConfig(id = '') {
+window._registerAquaConfig = function (id = '') {
     return {
         onSuccess(succesCallback) {
             _setAquaConfig({success: succesCallback}, id);
