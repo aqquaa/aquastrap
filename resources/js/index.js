@@ -1,6 +1,7 @@
-import { _findComponentById } from './helper/util';
+import { _findComponentById, _hasProperty } from './helper/util';
 import { _setAquaConfig } from './core/index';
 import { _replicatePublicMethods } from './network';
+import { Method } from './helper/types';
 
 window.Aquastrap = {
     onSuccess(succesCallback) {
@@ -39,19 +40,45 @@ window._aquaGenerate = function (id) {
                 return {
                     processing: false,
                     result: null,
-                    submit(form, type = 'POST') {
+                    statusCode: '',
+                    errors: {},
+                    message: '',
+                    get hasValidationError() {
+                        return ! this.processing && Object.keys(this.errors).length > 0;
+                    },
+                    submit(form, type = Method.POST) {
                         this.processing = true;
                         this.result = null;
+                        this.statusCode = '';
+                        this.errors = {};
+                        this.message = '';
 
                         networkHandler(form, type)
                         .then(res => {
-                            this.result = res;
+                            this.statusCode = res.status;
+                            this.result = res.data;
+                            this.message = _hasProperty(res.data, 'message') ? res.data.message : '';
+                            this.errors = res.status === 422 && _hasProperty(res.data, 'errors') ? res.data.errors : {};
                         })
-                        .catch(err => {})
+                        .catch(err => {
+                            this.message = 'Network Request failed !';
+                        })
                         .finally(_ => this.processing = false)
                     },
+                    get(form) {
+                        this.submit(form, Method.GET);
+                    },
+                    post(form) {
+                        this.submit(form, Method.POST);
+                    },
                     put(form) {
-                        this.submit(form, 'PUT');
+                        this.submit(form, Method.PUT);
+                    },
+                    patch(form) {
+                        this.submit(form, Method.PATCH);
+                    },
+                    delete(form) {
+                        this.submit(form, Method.DELETE);
                     }
                 }
             }

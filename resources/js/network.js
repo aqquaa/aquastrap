@@ -1,34 +1,50 @@
+import { Method } from './helper/types';
+import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl } from './helper/util';
+
 function _manifestNetworkHandler(url, successCallback = null, errorCallback = null) {
-    return async (formData = {}, type = 'POST') => {
+    return async (data = {}, method = Method.POST) => {
+        if (_hasFiles(data) && !(data instanceof FormData)) {
+            data = _objectToFormData(data)
+        }
+
+        if (!(data instanceof FormData)) {
+            const [_href, _data] = _mergeDataIntoQueryString(method, url, data)
+            url = hrefToUrl(_href)
+            data = _data
+        }
+
         let options = {
             headers: {
                 Accept: 'application/json',
-                'Content-Type': 'application/json',
+                ...( ! (data instanceof FormData) && {"Content-Type": "application/json"} ),
                 "X-Requested-With": "XMLHttpRequest",
                 "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
             },
             credentials: "same-origin",
-            method: type,
-            body: JSON.stringify(formData),
+            method: method,
+            ...(method !== Method.GET && {
+                body: data
+            }),
         };
 
         const reponse = await fetch(url, options)
         .then(res => {
-            if(res.status >= 400) {
-                throw new Error(res.status + ' Network request failed!');
-            }
-
-            return res.json();
+            return res;
         })
         .then(function(data) {
-            if (typeof successCallback === 'function') { successCallback(data); }
+            if(data.status >= 400 && typeof errorCallback === 'function') { errorCallback(data); }
 
-            return data;
+            if (data.status < 300 && typeof successCallback === 'function') { successCallback(data); }
+
+            const status = data.status;
+
+            return data.json()
+            .then(r => ({status, data: r}));
         })
         .catch(function(error) {
             if (typeof errorCallback === 'function') { errorCallback(error); }
 
-            throw new Error(error);
+            return error;
         });
 
         return reponse;
