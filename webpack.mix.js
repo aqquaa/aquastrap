@@ -1,6 +1,6 @@
 let mix = require('laravel-mix')
 
-mix.browserSync('127.0.0.1:8000');
+// mix.browserSync('127.0.0.1:8000');
 
 mix
   .setPublicPath('dist')
@@ -10,4 +10,4 @@ mix
 mix.copy([
     'dist/js/index.js',
     'dist/js/routes.js',
-], './../../test/test-autostrap/public/vendor/aquastrap/js');
+], './../../test/test-aquastrap/public/vendor/aquastrap/js');
