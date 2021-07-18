@@ -10,7 +10,7 @@ function _manifestNetworkHandler(url, successCallback = null, errorCallback = nu
         if (!(data instanceof FormData)) {
             const [_href, _data] = _mergeDataIntoQueryString(method, url, data)
             url = hrefToUrl(_href)
-            data = _data
+            data = JSON.stringify(_data)
         }
 
         let options = {
