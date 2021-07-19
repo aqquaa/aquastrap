@@ -2,7 +2,7 @@ import { Method } from './helper/types';
 import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl } from './helper/util';
 
 function _manifestNetworkHandler(url, successCallback = null, errorCallback = null) {
-    return async (data = {}, method = Method.POST) => {
+    return async (data = {}, method = Method.POST, signal = null) => {
         if (_hasFiles(data) && !(data instanceof FormData)) {
             data = _objectToFormData(data)
         }
@@ -13,6 +13,8 @@ function _manifestNetworkHandler(url, successCallback = null, errorCallback = nu
             data = JSON.stringify(_data)
         }
 
+        const cancelSignal = signal || (new AbortController()).signal;
+
         let options = {
             headers: {
                 Accept: 'application/json',
@@ -20,6 +22,7 @@ function _manifestNetworkHandler(url, successCallback = null, errorCallback = nu
                 "X-Requested-With": "XMLHttpRequest",
                 "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
             },
+            signal: cancelSignal,
             credentials: "same-origin",
             method: method,
             ...(method !== Method.GET && {

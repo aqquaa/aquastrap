@@ -43,6 +43,7 @@ window._aquaGenerate = function (id) {
                     statusCode: '',
                     errors: {},
                     message: '',
+                    abortController: null,
                     get hasValidationError() {
                         return ! this.processing && Object.keys(this.errors).length > 0;
                     },
@@ -52,8 +53,9 @@ window._aquaGenerate = function (id) {
                         this.statusCode = '';
                         this.errors = {};
                         this.message = '';
+                        this.abortController = new AbortController();
 
-                        networkHandler(form, type)
+                        networkHandler(form, type, this.abortController.signal)
                         .then(res => {
                             this.statusCode = res.status;
                             this.result = res.data;
@@ -64,6 +66,10 @@ window._aquaGenerate = function (id) {
                             this.message = 'Network Request failed !';
                         })
                         .finally(_ => this.processing = false)
+                    },
+                    cancel() {
+                        if(this.abortController)
+                        this.abortController.abort();
                     },
                     get(form) {
                         this.submit(form, Method.GET);
