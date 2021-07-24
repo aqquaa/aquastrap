@@ -51,6 +51,31 @@ trait ExposeMethods
 
         $id = collect(explode('\\', $classWithNamespace))->map(fn($p) => Str::kebab($p))->implode('.');
 
-        return ['component' => $id ];
+        $componentRef = new \ReflectionClass(static::class);
+        $componentConstructor = $componentRef->getConstructor();
+
+        $constructorArgs = [];
+        if($componentConstructor) {
+            $data = $this->data();
+
+            $parameters = $componentConstructor->getParameters();
+
+            foreach($parameters as $param)
+            {
+                if(array_key_exists($param->name, $data)) {
+                    $constructorArgs[$param->name] = $data[$param->name];
+                    continue;
+                }
+
+                if($param->isDefaultValueAvailable()) {
+                    $constructorArgs[$param->name] = $param->getDefaultValue();
+                    continue;
+                }
+
+                throw new \RuntimeException('Aquastrap component constructor argument missing '. $classWithNamespace);
+            }
+        }
+
+        return ['component' => $id, 'dependency' => $constructorArgs];
     }
 }
