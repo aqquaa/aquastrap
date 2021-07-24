@@ -3,22 +3,22 @@ window._aquastrap =  window._aquastrap || {
         {
             id: 'article',
             routes: {
-                "update": "http://127.0.0.1:8000/articles/foo/update",
-                "delete": "http://127.0.0.1:8000/articles/foo/delete"
+                "update": "http://192.168.0.100:8000/articles/foo/update",
+                "delete": "http://192.168.0.100:8000/articles/foo/delete"
             },
             config: {}
         },
         {
             id: 'post',
             routes: {
-                "delete": "http://127.0.0.1:8000/aquastrap/145b16fffaf48b09d39c7339d77c3ae6/delete"
+                "delete": "http://192.168.0.100:8000/aquastrap/145b16fffaf48b09d39c7339d77c3ae6/delete"
             },
             config: {}
         },
         {
             id: 'folder.my-component',
             routes: {
-                "delete": "http://127.0.0.1:8000/aquastrap/d5796c8780c470a876faf663ba4bf5da/delete"
+                "delete": "http://192.168.0.100:8000/mycomponent/foo/delete"
             },
             config: {}
         }
