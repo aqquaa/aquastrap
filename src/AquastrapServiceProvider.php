@@ -14,9 +14,9 @@ class AquastrapServiceProvider extends ServiceProvider
             (new RouteLoader)->registerRoutes();
         }
 
-        Blade::directive('aqua', function ($drips) {
+        Blade::directive('aqua', function () {
             return "<?php 
-            echo \Devsrv\Aquastrap\AquaDirective::networkHandler($drips);
+            echo \Devsrv\Aquastrap\AquaDirective::networkHandler(\$_drips);
             ?>";
         });
 
@@ -26,9 +26,9 @@ class AquastrapServiceProvider extends ServiceProvider
             ?>";
         });
 
-        Blade::directive('aquaconfig', function ($drips) {
+        Blade::directive('aquaconfig', function () {
             return "<?php 
-            echo \Devsrv\Aquastrap\AquaDirective::setComponentConfig($drips);
+            echo \Devsrv\Aquastrap\AquaDirective::setComponentConfig(\$_drips);
             ?>";
         });
     }

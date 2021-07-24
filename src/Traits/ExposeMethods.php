@@ -45,7 +45,7 @@ trait ExposeMethods
         return action([static::class, $method]);
     }
 
-    public function drips() {
+    public function _drips() {
         $classWithNamespace = (string) static::class;
         $classWithNamespace = str_replace('App\\View\\Components\\', '', $classWithNamespace);
 
