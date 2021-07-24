@@ -39,7 +39,7 @@ class RouteLoader
     }
 
     private function shouldRegister(string $className) : bool {
-        return in_array(ExposeMethods::class, class_uses_recursive($className));
+        return Util::isAquaComponent($className);
     }
 
     public function methodsToBind(string $className) : array {

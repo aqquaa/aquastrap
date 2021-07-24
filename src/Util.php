@@ -10,6 +10,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
+use Devsrv\Aquastrap\Traits\ExposeMethods;
 
 class Util
 {
@@ -93,5 +94,9 @@ class Util
             'getMiddleware',
             'routes'
         ], get_class_methods(\Illuminate\View\Component::class));
+    }
+
+    public static function isAquaComponent(string $className) : bool {
+        return in_array(ExposeMethods::class, class_uses_recursive($className));
     }
 }
