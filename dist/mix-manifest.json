@@ -1,6 +1,6 @@
 {
     "/js/index.js": "/js/index.js",
-    "/js/routes.js": "/js/routes.js",
+    "/js/store.js": "/js/store.js",
     "/test/test-aquastrap/public/vendor/aquastrap/js/index.js": "/test/test-aquastrap/public/vendor/aquastrap/js/index.js",
-    "/test/test-aquastrap/public/vendor/aquastrap/js/routes.js": "/test/test-aquastrap/public/vendor/aquastrap/js/routes.js"
+    "/test/test-aquastrap/public/vendor/aquastrap/js/store.js": "/test/test-aquastrap/public/vendor/aquastrap/js/store.js"
 }
