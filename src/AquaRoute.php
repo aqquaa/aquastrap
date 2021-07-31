@@ -7,6 +7,8 @@ use ReflectionClass;
 use ReflectionMethod;
 use Devsrv\Aquastrap\Util;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 use Devsrv\Aquastrap\Exceptions\RequestException;
 
 class AquaRoute
@@ -29,7 +31,13 @@ class AquaRoute
         $header = $request->header('X-Aquastrap');
         $data = json_decode($header);
 
-        $componentClass = str_replace('.', '\\', $data->component->class);
+        try {
+            $decryptedClassName = Crypt::decryptString($data->component->class);
+        } catch (DecryptException $e) {
+            abort(403, 'Aquastrap Detected Tampered Data');
+        }
+
+        $componentClass = str_replace('.', '\\', $decryptedClassName);
 
         $constructorParams = (array) $data->component->params;
         $method = $data->method;

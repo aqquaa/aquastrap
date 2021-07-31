@@ -3,6 +3,7 @@
 namespace Devsrv\Aquastrap\Traits;
 
 use Devsrv\Aquastrap\Util;
+use Illuminate\Support\Facades\Crypt;
 
 trait ExposeMethods
 {
@@ -41,9 +42,9 @@ trait ExposeMethods
         return md5($classWithNamespace);
     }
 
-    private function getComponentName() : string
+    private function getEncComponentName() : string
     {
-        return str_replace('\\', '.', (string) static::class);
+        return Crypt::encryptString( str_replace('\\', '.', (string) static::class) );
     }
 
     private function getAllowedCallableMethods() : array
@@ -54,7 +55,7 @@ trait ExposeMethods
     public function _drips() {
         return [
             'id'            => $this->getComponentChecksum(), 
-            'component'     => $this->getComponentName(), 
+            'component'     => $this->getEncComponentName(), 
             'dependency'    => $this->getComponentDependencies(), 
             'methods'       => $this->getAllowedCallableMethods()
         ];
