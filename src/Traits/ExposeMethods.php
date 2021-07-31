@@ -2,59 +2,16 @@
 
 namespace Devsrv\Aquastrap\Traits;
 
-use InvalidArgumentException;
-use Illuminate\Routing\ControllerMiddlewareOptions;
-use Illuminate\Routing\Exceptions\UrlGenerationException;
-use \Facades\Devsrv\Aquastrap\RouteLoader;
-use Illuminate\Support\Str;
+use Devsrv\Aquastrap\Util;
 
 trait ExposeMethods
 {
-    protected array $middleware = [];
-
-    /**
-     * Register middleware on the component class.
-     *
-     * @param  \Closure|array|string  $middleware
-     * @param  array  $options
-     * @return \Illuminate\Routing\ControllerMiddlewareOptions
-     */
-    protected function middleware($middleware, array $options = [])
-    {
-        foreach ((array) $middleware as $m) {
-            $this->middleware[] = [
-                'middleware' => $m,
-                'options' => &$options,
-            ];
-        }
-
-        return new ControllerMiddlewareOptions($options);
-    }
-
-    /**
-     * Get the middleware assigned to the component.
-     *
-     * @return array
-     */
-    public function getMiddleware() : array
-    {
-        return $this->middleware;
-    }
-
-    public function aquaroute($method) {
-        return action([static::class, $method]);
-    }
-
-    public function _drips() {
-        $classWithNamespace = (string) static::class;
-        $classWithNamespace = str_replace('App\\View\\Components\\', '', $classWithNamespace);
-
-        $id = collect(explode('\\', $classWithNamespace))->map(fn($p) => Str::kebab($p))->implode('.');
+    private function getComponentDependencies() : array {
+        $constructorArgs = [];
 
         $componentRef = new \ReflectionClass(static::class);
         $componentConstructor = $componentRef->getConstructor();
 
-        $constructorArgs = [];
         if($componentConstructor) {
             $data = $this->data();
 
@@ -72,10 +29,34 @@ trait ExposeMethods
                     continue;
                 }
 
-                throw new \RuntimeException('Aquastrap component constructor argument missing '. $classWithNamespace);
+                throw new \RuntimeException('Aquastrap component constructor argument missing '. (string) static::class);
             }
         }
 
-        return ['component' => $id, 'dependency' => $constructorArgs];
+        return $constructorArgs;
+    }
+
+    private function getComponentChecksum() : string {
+        $classWithNamespace = (string) static::class;
+        return md5($classWithNamespace);
+    }
+
+    private function getComponentName() : string
+    {
+        return str_replace('\\', '.', (string) static::class);
+    }
+
+    private function getAllowedCallableMethods() : array
+    {
+        return Util::getPublicMethods((string) static::class);
+    }
+
+    public function _drips() {
+        return [
+            'id'            => $this->getComponentChecksum(), 
+            'component'     => $this->getComponentName(), 
+            'dependency'    => $this->getComponentDependencies(), 
+            'methods'       => $this->getAllowedCallableMethods()
+        ];
     }
 }
