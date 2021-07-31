@@ -6,7 +6,6 @@ window._aquaCore = {
             ...window._aquastrap.component,
             {
                 id: id, 
-                routes: {},
                 config: {}
             }
         ];
