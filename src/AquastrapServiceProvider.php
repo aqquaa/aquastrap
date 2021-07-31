@@ -4,7 +4,7 @@ namespace Devsrv\Aquastrap;
 
 use Illuminate\Support\ServiceProvider;
 use Devsrv\Aquastrap\RouteLoader;
-use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\{ Blade, Route };
 
 class AquastrapServiceProvider extends ServiceProvider
 {
@@ -12,6 +12,14 @@ class AquastrapServiceProvider extends ServiceProvider
     {
         if(! $this->app->routesAreCached()) {
             (new RouteLoader)->registerRoutes();
+        }
+
+        $this->registerRoutes();
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+              __DIR__.'/../config/config.php' => config_path('aquastrap.php'),
+            ], 'config');
         }
 
         Blade::directive('aqua', function () {
@@ -33,6 +41,20 @@ class AquastrapServiceProvider extends ServiceProvider
         });
     }
 
+    protected function registerRoutes()
+    {
+        Route::group($this->routeConfiguration(), function () {
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        });
+    }
+
+    protected function routeConfiguration()
+    {
+        return [
+            'middleware' => array_merge(['web'], config('aquastrap.middleware')),
+        ];
+    }
+
     /**
      * Register any application services.
      *
@@ -40,6 +62,6 @@ class AquastrapServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'aquastrap');
     }
 }
