@@ -5,3 +5,10 @@ export const Method = {
     PATCH: 'patch',
     DELETE: 'delete',
 }
+
+export const Callback = {
+    SUCCESS: 'success',
+    ERROR: 'error',
+    START: 'start',
+    FINISH: 'finish'
+}
