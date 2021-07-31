@@ -1,7 +1,7 @@
-import { Method } from './helper/types';
+import { Method, Callback } from './helper/types';
 import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl } from './helper/util';
 
-function _manifestNetworkHandler(url, successCallback = null, errorCallback = null) {
+function _manifestNetworkHandler(url, componentClass, classDependency, classMethod, id) {
     return async (data = {}, method = Method.POST, signal = null) => {
         if (_hasFiles(data) && !(data instanceof FormData)) {
             data = _objectToFormData(data)
@@ -20,7 +20,14 @@ function _manifestNetworkHandler(url, successCallback = null, errorCallback = nu
                 Accept: 'application/json',
                 ...( ! (data instanceof FormData) && {"Content-Type": "application/json"} ),
                 "X-Requested-With": "XMLHttpRequest",
-                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+                "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
+                "X-Aquastrap": JSON.stringify({
+                    component: {
+                        class: componentClass,
+                        params: classDependency
+                    },
+                    method: classMethod
+                })
             },
             signal: cancelSignal,
             credentials: "same-origin",
@@ -35,9 +42,9 @@ function _manifestNetworkHandler(url, successCallback = null, errorCallback = nu
             return res;
         })
         .then(function(data) {
-            if(data.status >= 400 && typeof errorCallback === 'function') { errorCallback(data); }
+            if(data.status >= 400) { execUserCallback(id, Callback.ERROR, data); }
 
-            if (data.status < 300 && typeof successCallback === 'function') { successCallback(data); }
+            if (data.status < 300) { execUserCallback(id, Callback.SUCCESS, data); }
 
             const status = data.status;
 
@@ -45,7 +52,7 @@ function _manifestNetworkHandler(url, successCallback = null, errorCallback = nu
             .then(r => ({status, data: r}));
         })
         .catch(function(error) {
-            if (typeof errorCallback === 'function') { errorCallback(error); }
+            execUserCallback(id, Callback.ERROR, data);
 
             return error;
         });
@@ -54,15 +61,29 @@ function _manifestNetworkHandler(url, successCallback = null, errorCallback = nu
     };
 }
 
-export function _replicatePublicMethods(routes, id, successCallback = null, errorCallback = null) {
+function execUserCallback(id, type, data) {
+    switch (type) {
+        case Callback.SUCCESS:
+            _aquaCore.resolveSuccessCallback(id)(data);
+            break;
+        case Callback.ERROR:
+            _aquaCore.resolveErrorCallback(id)(data);
+            break;
+    
+        case Callback.START:
+            
+            break;
+    
+        default:
+            break;
+    }
+}
+
+export function _replicatePublicMethods(componentClass, classDependency, methodNames, id) {
     let methods = {};
 
-    for (const [name, url] of Object.entries(routes)) {
-        methods = {...methods, [name]: _manifestNetworkHandler(
-            url, 
-            successCallback || _aquaCore.resolveSuccessCallback(id), 
-            errorCallback || _aquaCore.resolveErrorCallback(id)
-        ) };
+    for (const name of Object.values(methodNames)) {
+        methods = {...methods, [name]: _manifestNetworkHandler(window._aquaroute, componentClass, classDependency, name, id) };
     }
 
     return methods;
