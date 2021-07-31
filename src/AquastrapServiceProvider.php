@@ -3,25 +3,24 @@
 namespace Devsrv\Aquastrap;
 
 use Illuminate\Support\ServiceProvider;
-use Devsrv\Aquastrap\RouteLoader;
 use Illuminate\Support\Facades\{ Blade, Route };
 
 class AquastrapServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        if(! $this->app->routesAreCached()) {
-            (new RouteLoader)->registerRoutes();
-        }
-
         $this->registerRoutes();
+
+        $this->registerDirectives();
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
               __DIR__.'/../config/config.php' => config_path('aquastrap.php'),
             ], 'config');
         }
+    }
 
+    protected function registerDirectives() {
         Blade::directive('aqua', function () {
             return "<?php 
             echo \Devsrv\Aquastrap\AquaDirective::networkHandler(\$_drips);
