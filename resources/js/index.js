@@ -11,25 +11,11 @@ window.Aquastrap = {
     onError(errCallback) {
         _setAquaConfig({error: errCallback});
         return this;
-    },
-    component(id) {
-        return {
-            routes: _findComponentById(id).routes,
-            onSuccess(succesCallback) {
-                _setAquaConfig({success: succesCallback}, id);
-                return this;
-            },
-            onError(errCallback) {
-                _setAquaConfig({error: errCallback}, id);
-                return this;
-            },
-            ..._replicatePublicMethods(_findComponentById(id).routes, id)
-        }
     }
 };
 
-window._aquaGenerate = function (id) {
-    const methodsAccessor = _replicatePublicMethods(_findComponentById(id).routes, id);
+window._aquaGenerate = function (id, componentClass, classDependency, methods) {
+    const methodsAccessor = _replicatePublicMethods(componentClass, classDependency, methods, id);
 
     let hook = {};
 
