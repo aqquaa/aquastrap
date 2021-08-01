@@ -9,23 +9,37 @@ use Devsrv\Aquastrap\Util;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Routing\Controller;
 use Devsrv\Aquastrap\Exceptions\RequestException;
 
-class AquaRoute
+class AquaRoute extends Controller
 {
-    public function Process(Request $request) {
-        [$componentClass, $args, $method] = $this->Validate($request);
+    protected $componentClass;
+    protected $args;
+    protected $method;
 
-        try {
-            $instance = new $componentClass(...$args);
-        } catch (Exception $th) {
-            RequestException::failedToInstantiate($componentClass);
-        }
+    public function __construct()
+    {
+        [$componentClass, $args, $method] = $this->Validate(request());
 
-        return $instance->{$method}($request);
+        $this->componentClass   = $componentClass;
+        $this->args             = $args;
+        $this->method           = $method;
+
+        $this->applyMiddlewares($this->componentClass);
     }
 
-    private function Validate(Request $request) {
+    public function Process(Request $request) {
+        try {
+            $instance = new ($this->componentClass)(...$this->args);
+        } catch (Exception $th) {
+            RequestException::failedToInstantiate($this->componentClass);
+        }
+
+        return $instance->{$this->method}($request);
+    }
+
+    private function Validate(Request $request) : array {
         abort_unless($request->hasHeader('X-Aquastrap'), 422, 'Missing Aquastrap Header');
 
         $header = $request->header('X-Aquastrap');
@@ -73,5 +87,15 @@ class AquaRoute
         return [
             $componentClass, $args, $method
         ];
+    }
+
+    private function applyMiddlewares() : void
+    {
+        if(property_exists($this->componentClass, 'middlewares')) {
+            $middlewaresProp = (new ReflectionClass($this->componentClass))->getProperty('middlewares');
+            $middlewaresProp->setAccessible(true);
+
+            $this->middleware($middlewaresProp->getValue());
+        }
     }
 }
