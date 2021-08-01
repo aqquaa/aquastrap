@@ -27,13 +27,13 @@ class AquastrapServiceProvider extends ServiceProvider
             ?>";
         });
 
-        Blade::directive('aquasync', function () {
+        Blade::directive('aquaScripts', function () {
             return "<?php 
             echo \Devsrv\Aquastrap\AquaDirective::scripts();
             ?>";
         });
 
-        Blade::directive('aquaconfig', function () {
+        Blade::directive('aquaConfig', function () {
             return "<?php 
             echo \Devsrv\Aquastrap\AquaDirective::setComponentConfig(\$_drips);
             ?>";
