@@ -5,7 +5,7 @@ namespace Devsrv\Aquastrap\Traits;
 use Devsrv\Aquastrap\Util;
 use Illuminate\Support\Facades\Crypt;
 
-trait ExposeMethods
+trait AquaSync
 {
     private function getComponentDependencies() : array {
         $constructorArgs = [];
