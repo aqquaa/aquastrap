@@ -52,7 +52,7 @@ trait ExposeMethods
         return Util::getPublicMethods((string) static::class);
     }
 
-    public function _drips() {
+    public function _drips() : array {
         return [
             'id'            => $this->getComponentChecksum(), 
             'component'     => $this->getEncComponentName(), 
