@@ -10,7 +10,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
-use Devsrv\Aquastrap\Traits\ExposeMethods;
+use Devsrv\Aquastrap\Traits\AquaSync;
 
 class Util
 {
@@ -95,6 +95,6 @@ class Util
     }
 
     public static function isAquaComponent(string $className) : bool {
-        return in_array(ExposeMethods::class, class_uses_recursive($className));
+        return in_array(AquaSync::class, class_uses_recursive($className));
     }
 }
