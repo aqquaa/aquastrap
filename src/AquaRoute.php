@@ -61,7 +61,10 @@ class AquaRoute
 
             foreach($parameters as $param)
             {
-                throw_unless(isset($constructorParams[$param->name]), RequestException::missingArgs($componentClass));
+                throw_if(
+                    ! $param->isDefaultValueAvailable() && ! isset($constructorParams[$param->name]), 
+                    RequestException::missingArgs($componentClass)
+                );
 
                 $args[] = $constructorParams[$param->name];
             }
