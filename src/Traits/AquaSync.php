@@ -18,8 +18,7 @@ trait AquaSync
     protected function withAquaNotification(string $type, string $message, array $payload = []) : JsonResponse {
         return Response::json($payload)
             ->withHeaders([
-                'X-Aqua-Notification-Type'    =>  $type,
-                'X-Aqua-Notification-Message' =>  $message,
+                'X-Aqua-Notification' => json_encode(['type' => $type, 'message' => $message])
             ]);
     }
 
