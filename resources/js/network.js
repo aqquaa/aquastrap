@@ -1,7 +1,7 @@
 import { Method, Callback } from './helper/types';
 import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl } from './helper/util';
 
-function _manifestNetworkHandler(url, componentClass, classDependency, classMethod, id) {
+function _manifestNetworkHandler(url, ingredient, classMethod, id) {
     return async (data = {}, method = Method.POST, signal = null) => {
         if (_hasFiles(data) && !(data instanceof FormData)) {
             data = _objectToFormData(data)
@@ -22,10 +22,7 @@ function _manifestNetworkHandler(url, componentClass, classDependency, classMeth
                 "X-Requested-With": "XMLHttpRequest",
                 "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
                 "X-Aquastrap": JSON.stringify({
-                    component: {
-                        class: componentClass,
-                        params: classDependency
-                    },
+                    ingredient: ingredient,
                     method: classMethod
                 })
             },
@@ -79,11 +76,11 @@ function execUserCallback(id, type, data) {
     }
 }
 
-export function _replicatePublicMethods(componentClass, classDependency, methodNames, id) {
+export function _replicatePublicMethods(id, classIngredient, methodNames) {
     let methods = {};
 
     for (const name of Object.values(methodNames)) {
-        methods = {...methods, [name]: _manifestNetworkHandler(window._aquaroute, componentClass, classDependency, name, id) };
+        methods = {...methods, [name]: _manifestNetworkHandler(window._aquaroute, classIngredient, name, id) };
     }
 
     return methods;

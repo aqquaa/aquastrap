@@ -14,8 +14,8 @@ window.Aquastrap = {
     }
 };
 
-window._aquaGenerate = function (id, componentClass, classDependency, methods) {
-    const methodsAccessor = _replicatePublicMethods(componentClass, classDependency, methods, id);
+window._aquaGenerate = function (id, componentIngredient, methods) {
+    const methodsAccessor = _replicatePublicMethods(id, componentIngredient, methods);
 
     let hook = {};
 
