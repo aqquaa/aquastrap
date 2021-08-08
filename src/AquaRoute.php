@@ -7,8 +7,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use Devsrv\Aquastrap\Util;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Encryption\DecryptException;
-use Illuminate\Support\Facades\Crypt;
+use Devsrv\Aquastrap\Crypt\Crypt;
 use Illuminate\Routing\Controller;
 use Devsrv\Aquastrap\Exceptions\RequestException;
 
@@ -46,14 +45,18 @@ class AquaRoute extends Controller
         $data = json_decode($header);
 
         try {
-            $decryptedClassName = Crypt::decryptString($data->component->class);
-        } catch (DecryptException $e) {
-            abort(403, 'Aquastrap Detected Tampered Data');
+            $decryptedClassIngredient = Crypt::Decrypt($data->ingredient);
+            $decoded = base64_decode($decryptedClassIngredient);
+            $unserialized = unserialize($decoded);
+
+        } catch (\Exception $e) {
+            if(App::environment() === 'production') abort(403, 'Aquastrap Detected Tampered Data');
+            else throw $e;
         }
 
-        $componentClass = str_replace('.', '\\', $decryptedClassName);
+        $componentClass = str_replace('.', '\\', $unserialized['class']);
 
-        $constructorParams = (array) $data->component->params;
+        $constructorParams = (array) $unserialized['dependencies'];
         $method = $data->method;
 
         abort_unless(
@@ -80,7 +83,7 @@ class AquaRoute extends Controller
                     RequestException::missingArgs($componentClass)
                 );
 
-                $args[] = $constructorParams[$param->name];
+                $args[] = unserialize($constructorParams[$param->name]);
             }
         } 
 
