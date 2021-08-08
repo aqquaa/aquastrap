@@ -3,8 +3,10 @@
 namespace Devsrv\Aquastrap\Traits;
 
 use Devsrv\Aquastrap\Util;
-use Illuminate\Support\Facades\{Crypt, Response};
+use Illuminate\Support\Facades\Response;
 use Illuminate\Http\JsonResponse;
+use Opis\Closure\SerializableClosure;
+use Devsrv\Aquastrap\Crypt\Crypt;
 
 trait AquaSync
 {
@@ -26,6 +28,15 @@ trait AquaSync
     public function warning(string $message, array $payload = []) : JsonResponse { return $this->withAquaNotification('warning', $message, $payload); }
     public function info(string $message, array $payload = []) :    JsonResponse { return $this->withAquaNotification('info', $message, $payload); }
     public function danger(string $message, array $payload = []) :  JsonResponse { return $this->withAquaNotification('danger', $message, $payload); }
+
+    private function serializeDeps(array $dependencies) : array {
+        foreach($dependencies as $key => $dependency) {
+            $dependencies[$key] = $dependency instanceof \Closure ?
+                                serialize(new SerializableClosure($dependency)) : serialize($dependency);
+        }
+
+        return $dependencies;
+    }
 
     private function getComponentDependencies() : array {
         $constructorArgs = [];
@@ -54,7 +65,7 @@ trait AquaSync
             }
         }
 
-        return $constructorArgs;
+        return $this->serializeDeps($constructorArgs);
     }
 
     private function getComponentChecksum() : string {
@@ -62,9 +73,20 @@ trait AquaSync
         return md5($classWithNamespace);
     }
 
-    private function getEncComponentName() : string
+    private function getComponentNameWithNS() : string
     {
-        return Crypt::encryptString( str_replace('\\', '.', (string) static::class) );
+        return str_replace('\\', '.', (string) static::class);
+    }
+
+    private function getComponentIngredient() : string
+    {
+        $payload = base64_encode(serialize([
+                'class' => $this->getComponentNameWithNS(),
+                'dependencies' => $this->getComponentDependencies()
+            ]
+        ));
+
+        return Crypt::Encrypt($payload);
     }
 
     private function getAllowedCallableMethods() : array
@@ -75,8 +97,7 @@ trait AquaSync
     public function _drips() : array {
         return [
             'id'            => $this->getComponentChecksum(), 
-            'component'     => $this->getEncComponentName(), 
-            'dependency'    => $this->getComponentDependencies(), 
+            'ingredient'    => $this->getComponentIngredient(), 
             'methods'       => $this->getAllowedCallableMethods()
         ];
     }
