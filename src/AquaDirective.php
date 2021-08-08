@@ -6,11 +6,10 @@ class AquaDirective
 {
     public static function networkHandler($drips) {
         $id         = "'". $drips()['id'] . "'";
-        $component  = "'". $drips()['component'] . "'";
-        $dependency = str_replace('"', '\'', json_encode($drips()['dependency'], JSON_FORCE_OBJECT));
+        $ingredient = "'". $drips()['ingredient'] . "'";
         $methods    = str_replace('"', '\'', json_encode($drips()['methods'], JSON_FORCE_OBJECT));
 
-        return "_aquaGenerate(". $id .", ". $component .", ". $dependency .", ". $methods .")";
+        return "_aquaGenerate(". $id .", ". $ingredient .", ". $methods .")";
     }
 
     public static function setComponentConfig($drips) {
