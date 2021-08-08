@@ -6,9 +6,10 @@ use ParagonIE\Halite\KeyFactory;
 use ParagonIE\HiddenString\HiddenString;
 use Devsrv\Aquastrap\Exceptions\CryptException;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
+use ParagonIE\Halite\Symmetric\EncryptionKey;
 
 class Crypt {
-    protected static function getKey() : KeyFactory {
+    protected static function getKey() : EncryptionKey {
         $key = config('aquastrap.encryption.strategy.halite.key_path');
 
         throw_unless(file_exists($key), CryptException::haliteKeyMissing());
@@ -23,6 +24,6 @@ class Crypt {
     }
 
     public static function Decrypt(string $content) : string {
-        return Symmetric::decrypt($content, self::getKey());
+        return Symmetric::decrypt($content, self::getKey())->getString();
     }
 }
