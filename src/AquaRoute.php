@@ -50,9 +50,14 @@ class AquaRoute extends Controller
             $unserialized = unserialize($decoded);
 
         } catch (\Exception $e) {
-            if(App::environment() === 'production') abort(403, 'Aquastrap Detected Tampered Data');
-            else throw $e;
+            abort(403, 'Aquastrap Detected Tampered Data');
         }
+
+        abort_unless(
+            is_array($unserialized) && array_key_exists('class', $unserialized) && array_key_exists('dependencies', $unserialized),
+            403,
+            'Aquastrap Detected Tampered Data'
+        );
 
         $componentClass = str_replace('.', '\\', $unserialized['class']);
 
