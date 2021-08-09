@@ -91,6 +91,10 @@ class Util
     {
         return array_merge([
             '_drips',
+            'success',
+            'warning',
+            'info',
+            'danger'
         ], get_class_methods(\Illuminate\View\Component::class));
     }
 

@@ -16,6 +16,14 @@ class AquaDirective
         return "_registerAquaConfig('". $drips()['id'] ."')";
     }
 
+    public static function linkComponent($link) {
+        return [
+            'id' => md5('test'),
+            'ingredient' => md5('test'),
+            'methods' => ['deletex'],
+        ];
+    }
+
     public static function scripts() {
         $aquaroute  = '<script>window._aquaroute = "'. route('aquastrap.request') .'";</script>';
 
