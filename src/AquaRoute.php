@@ -35,8 +35,8 @@ class AquaRoute extends Controller
                         AppContainer::makeWith($this->componentClass, $this->args) :
                         AppContainer::make($this->componentClass);
 
-        } catch (Exception $th) {
-            RequestException::failedToInstantiate($this->componentClass);
+        } catch (\Exception $th) {
+            throw RequestException::failedToInstantiate($this->componentClass);
         }
 
         return $instance->{$this->method}($request);
