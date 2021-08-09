@@ -10,6 +10,8 @@ use InvalidArgumentException;
 
 class GenerateRecipe {
     public string $className;
+    public $classInstance;
+    public array $suppliedDependencies = [];
 
     public function __construct(string $className) 
     {
@@ -18,10 +20,28 @@ class GenerateRecipe {
         throw_unless(class_exists($this->className), new InvalidArgumentException('Aquastrap Unable to link given class '. $className));
     }
 
+    /**
+     * generate by providing an intance of the class
+     */
     public function make($instance = null) : array {
+        $this->classInstance = $instance;
+
+        return $this->recipe();
+    }
+
+    /**
+     * generate by providing the dependencies of the class
+     */
+    public function makeWithSuppliedDependencies($suppliedDependencies = []) : array {
+        $this->suppliedDependencies = $suppliedDependencies;
+
+        return $this->recipe();
+    }
+
+    private function recipe() : array {
         return [
             'id'          => $this->getComponentChecksum(), 
-            'ingredient'  => $this->getComponentIngredient($instance), 
+            'ingredient'  => $this->getComponentIngredient(), 
             'methods'     => $this->getAllowedCallableMethods()
         ];
     }
@@ -35,10 +55,33 @@ class GenerateRecipe {
         return $dependencies;
     }
 
-    private function getComponentDependencies($instance) : array {
+    /**
+     * if instance passed then figure out class dependencies based on it
+     * if passed the dependencies no need to resolve
+     * 
+     * @return array serialized
+     */
+    private function getComponentDependencies() : array {
         $constructorArgs = [];
 
-        if(! $instance) return $this->serializeDeps($constructorArgs);
+        if($this->suppliedDependencies) {
+            $constructorArgs = $this->suppliedDependencies;
+        };
+
+        if($this->classInstance) {
+            $constructorArgs = $this->resolveDependencies($this->classInstance);
+        }
+
+        return $this->serializeDeps($constructorArgs);
+    }
+
+    /**
+     * from class instance to constructor dependencies
+     * 
+     * @return array dependencies as assoiative array
+     */
+    private function resolveDependencies($instance) : array {
+        $constructorArgs = [];
 
         $reflectionRef = new \ReflectionClass($instance);
         $classConstructor = $reflectionRef->getConstructor();
@@ -63,7 +106,7 @@ class GenerateRecipe {
             }
         }
 
-        return $this->serializeDeps($constructorArgs);
+        return $constructorArgs;
     }
 
     private function getComponentChecksum() : string {
@@ -76,11 +119,14 @@ class GenerateRecipe {
         return (string) str_replace('\\', '.', $this->className);
     }
 
-    private function getComponentIngredient($instance) : string
+    /**
+     * the data to be passed with aqua xhr request header
+     */
+    private function getComponentIngredient() : string
     {
         $payload = base64_encode(serialize([
                 'class' => $this->getComponentClassName(),
-                'dependencies' => $this->getComponentDependencies($instance)
+                'dependencies' => $this->getComponentDependencies()
             ]
         ));
 
