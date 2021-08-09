@@ -9,9 +9,9 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class GenerateRecipe {
-    public string $className;
-    public $classInstance;
-    public array $suppliedDependencies = [];
+    protected string $className;
+    protected $classInstance;
+    protected array $suppliedDependencies = [];
 
     public function __construct(string $className) 
     {
@@ -23,7 +23,7 @@ class GenerateRecipe {
     /**
      * generate by providing an intance of the class
      */
-    public function make($instance = null) : array {
+    public function make(object $instance) : array {
         $this->classInstance = $instance;
 
         return $this->recipe();
@@ -32,7 +32,7 @@ class GenerateRecipe {
     /**
      * generate by providing the dependencies of the class
      */
-    public function makeWithSuppliedDependencies($suppliedDependencies = []) : array {
+    public function makeWithSuppliedDependencies(array $suppliedDependencies = []) : array {
         $this->suppliedDependencies = $suppliedDependencies;
 
         return $this->recipe();
@@ -78,9 +78,10 @@ class GenerateRecipe {
     /**
      * from class instance to constructor dependencies
      * 
+     * @param object $instance
      * @return array dependencies as assoiative array
      */
-    private function resolveDependencies($instance) : array {
+    private function resolveDependencies(object $instance) : array {
         $constructorArgs = [];
 
         $reflectionRef = new \ReflectionClass($instance);
