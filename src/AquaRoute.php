@@ -5,10 +5,11 @@ namespace Devsrv\Aquastrap;
 use Exception;
 use ReflectionClass;
 use ReflectionMethod;
-use Devsrv\Aquastrap\Util;
 use Illuminate\Http\Request;
-use Devsrv\Aquastrap\Crypt\Crypt;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\App as AppContainer;
+use Devsrv\Aquastrap\Util;
+use Devsrv\Aquastrap\Crypt\Crypt;
 use Devsrv\Aquastrap\Exceptions\RequestException;
 
 class AquaRoute extends Controller
@@ -30,7 +31,10 @@ class AquaRoute extends Controller
 
     public function Process(Request $request) {
         try {
-            $instance = new ($this->componentClass)(...$this->args);
+            $instance = count($this->args) ?
+                        AppContainer::makeWith($this->componentClass, $this->args) :
+                        AppContainer::make($this->componentClass);
+
         } catch (Exception $th) {
             RequestException::failedToInstantiate($this->componentClass);
         }
@@ -83,12 +87,8 @@ class AquaRoute extends Controller
 
             foreach($parameters as $param)
             {
-                throw_if(
-                    ! $param->isDefaultValueAvailable() && ! isset($constructorParams[$param->name]), 
-                    RequestException::missingArgs($componentClass)
-                );
-
-                $args[] = unserialize($constructorParams[$param->name]);
+                if(isset($constructorParams[$param->name]))
+                $args[$param->name] = unserialize($constructorParams[$param->name]);
             }
         } 
 
