@@ -59,10 +59,7 @@ class GenerateRecipe {
 
                 if($param->isDefaultValueAvailable()) {
                     $constructorArgs[$paramName] = $param->getDefaultValue();
-                    continue;
                 }
-
-                throw new \RuntimeException('Aquastrap component constructor argument missing '. (string) $this->className);
             }
         }
 
