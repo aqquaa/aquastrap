@@ -2,6 +2,8 @@
 
 namespace Devsrv\Aquastrap;
 
+use Devsrv\Aquastrap\GenerateRecipe;
+
 class AquaDirective
 {
     public static function networkHandler($drips) {
@@ -17,11 +19,12 @@ class AquaDirective
     }
 
     public static function linkComponent($link) {
-        return [
-            'id' => md5('test'),
-            'ingredient' => md5('test'),
-            'methods' => ['deletex'],
-        ];
+        $class = is_array($link) ? $link[0] : $link;
+        $dependencies = is_array($link) && isset($link[1]) ? $link[1] : [];
+        
+        return function() use ($class, $dependencies) { 
+            return (new GenerateRecipe($class))->makeWithSuppliedDependencies($dependencies);
+        };
     }
 
     public static function scripts() {
