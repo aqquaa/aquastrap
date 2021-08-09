@@ -23,7 +23,7 @@ class AquastrapServiceProvider extends ServiceProvider
     protected function registerDirectives() {
         Blade::directive('aqua', function () {
             return "<?php 
-            echo \Devsrv\Aquastrap\AquaDirective::networkHandler(\$_drips);
+            echo \Devsrv\Aquastrap\AquaDirective::networkHandler(\$_aquaDrips);
             ?>";
         });
 
@@ -35,7 +35,13 @@ class AquastrapServiceProvider extends ServiceProvider
 
         Blade::directive('aquaConfig', function () {
             return "<?php 
-            echo \Devsrv\Aquastrap\AquaDirective::setComponentConfig(\$_drips);
+            echo \Devsrv\Aquastrap\AquaDirective::setComponentConfig(\$_aquaDrips);
+            ?>";
+        });
+
+        Blade::directive('aquaLink', function ($link) {
+            return "<?php 
+            \$_aquaDrips = \Devsrv\Aquastrap\AquaDirective::linkComponent($link);
             ?>";
         });
     }
