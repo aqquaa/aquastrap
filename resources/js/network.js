@@ -1,7 +1,7 @@
 import { Method, Callback } from './helper/types';
 import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl } from './helper/util';
 
-function _manifestNetworkHandler(url, ingredient, classMethod, id) {
+function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
     return async (data = {}, method = Method.POST, signal = null) => {
         if (_hasFiles(data) && !(data instanceof FormData)) {
             data = _objectToFormData(data)
@@ -76,11 +76,11 @@ function execUserCallback(id, type, data) {
     }
 }
 
-export function _replicatePublicMethods(id, classIngredient, methodNames) {
+export function _replicatePublicMethods(id, key, classIngredient, methodNames) {
     let methods = {};
 
     for (const name of Object.values(methodNames)) {
-        methods = {...methods, [name]: _manifestNetworkHandler(window._aquaroute, classIngredient, name, id) };
+        methods = {...methods, [name]: _manifestNetworkHandler(window._aquaroute, classIngredient, name, id, key) };
     }
 
     return methods;
