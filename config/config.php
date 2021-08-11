@@ -39,8 +39,7 @@ return [
 
         'strategy' => [
             'native' => [
-                'encrypter' => [\Illuminate\Support\Facades\Crypt::class, 'encryptString'],
-                'decrypter' => [\Illuminate\Support\Facades\Crypt::class, 'decryptString']
+                'crypter' => \Devsrv\Aquastrap\Crypt\Native\Crypt::class
             ],
 
             /*
@@ -51,8 +50,7 @@ return [
             */
             // 'halite' => [
             //     'key_path' => storage_path('app/aquastrap/encryption.key'),
-            //     'encrypter' => [\Devsrv\Aquastrap\Crypt\Halite\Crypt::class, 'Encrypt'],
-            //     'decrypter' => [\Devsrv\Aquastrap\Crypt\Halite\Crypt::class, 'Decrypt']
+            //     'crypter' => \Devsrv\Aquastrap\Crypt\Halite\Crypt::class
             // ]
         ]
     ]
