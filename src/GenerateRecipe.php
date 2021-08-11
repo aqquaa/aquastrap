@@ -44,7 +44,8 @@ class GenerateRecipe {
         $ingredient = (string) $this->getComponentIngredient();
 
         return [
-            'id'          => static::getMemoized('checksum', function() { return $this->getComponentChecksum(); }), 
+            'id'          => static::getMemoized('checksum', function() { return $this->getComponentChecksum(); }),
+            'key'         => bin2hex(random_bytes(10)),
             'ingredient'  => static::getMemoized('ingredient.'. $ingredient, function() use ($ingredient) { return  Crypt::Encrypt($ingredient); }),
             'methods'     => static::getMemoized('allowed_methods', function() { return $this->getAllowedCallableMethods(); })
         ];
