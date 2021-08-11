@@ -3,43 +3,51 @@
 namespace Devsrv\Aquastrap\Crypt;
 
 use Devsrv\Aquastrap\Exceptions\CryptException;
+use Devsrv\Aquastrap\Contracts\Crypto;
 
 class Crypt {
     public static $config;
 
-    private static function getCrypter($type = 'encrypter') {
+    protected static function getCrypter() {
         $config = config('aquastrap.encryption');
-
         $strategy = data_get($config, 'default');
+        $crypterClass = data_get($config, 'strategy.' . $strategy . '.crypter');
 
-        return data_get($config, 'strategy.' . $strategy . '.' . $type);
+        $crypterReflection = new \ReflectionClass($crypterClass);
+
+        throw_unless(
+            $crypterReflection->implementsInterface(Crypto::class), 
+            CryptException::shouldImplementContract($strategy, (string) Crypto::class)
+        );
+
+        return $crypterClass;
     }
 
     public static function Encrypt(string $content) :string
     {
-        [$crypter, $encrypt] = self::getCrypter('encrypter');
+        $crypter = self::getCrypter();
 
         try {
-            $encrypted = $crypter::{$encrypt}($content);
+            $encrypted = $crypter::Encrypt($content);
 
             return $encrypted;
         }
         catch ( \Exception $e ) {
-            throw CryptException::failedToEncrypt($crypter .'::'. $encrypt);
+            throw CryptException::failedToEncrypt($crypter);
         }
     }
 
     public static function Decrypt(string $content) 
     {
-        [$crypter, $decrypt] = self::getCrypter('decrypter');
+        $crypter = self::getCrypter();
 
         try {
-            $decrypted = $crypter::{$decrypt}($content);
+            $decrypted = $crypter::Decrypt($content);
 
             return $decrypted;
         }
         catch ( \Exception $e ) {
-            throw CryptException::failedToDecrypt($crypter .'::'. $decrypt);
+            throw CryptException::failedToDecrypt($crypter);
         }
     }
 }
