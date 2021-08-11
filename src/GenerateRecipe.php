@@ -9,15 +9,17 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class GenerateRecipe {
-    protected string $className;
+    protected static string $className;
     protected $classInstance;
     protected array $suppliedDependencies = [];
 
+    protected static array $store = [];
+
     public function __construct(string $className) 
     {
-        $this->className = Str::of($className)->contains('\\') ? $className : str_replace('.', '\\', $className);
+        static::$className = Str::of($className)->contains('\\') ? $className : str_replace('.', '\\', $className);
 
-        throw_unless(class_exists($this->className), new InvalidArgumentException('Aquastrap Unable to link given class '. $className));
+        throw_unless(class_exists(static::$className), new InvalidArgumentException('Aquastrap Unable to link given class '. $className));
     }
 
     /**
@@ -39,10 +41,12 @@ class GenerateRecipe {
     }
 
     private function recipe() : array {
+        $ingredient = (string) $this->getComponentIngredient();
+
         return [
-            'id'          => $this->getComponentChecksum(), 
-            'ingredient'  => $this->getComponentIngredient(), 
-            'methods'     => $this->getAllowedCallableMethods()
+            'id'          => static::getMemoized('checksum', function() { return $this->getComponentChecksum(); }), 
+            'ingredient'  => static::getMemoized('ingredient.'. $ingredient, function() use ($ingredient) { return  Crypt::Encrypt($ingredient); }),
+            'methods'     => static::getMemoized('allowed_methods', function() { return $this->getAllowedCallableMethods(); })
         ];
     }
 
@@ -111,13 +115,12 @@ class GenerateRecipe {
     }
 
     private function getComponentChecksum() : string {
-        $classWithNamespace = (string) $this->className;
-        return md5($classWithNamespace);
+        return md5((string) static::$className);
     }
 
     private function getComponentClassName() : string
     {
-        return (string) str_replace('\\', '.', $this->className);
+        return (string) str_replace('\\', '.', static::$className);
     }
 
     /**
@@ -131,11 +134,19 @@ class GenerateRecipe {
             ]
         ));
 
-        return Crypt::Encrypt($payload);
+        return $payload;
     }
 
     private function getAllowedCallableMethods() : array
     {
-        return Util::getPublicMethods((string) $this->className);
+        return Util::getPublicMethods((string) static::$className);
+    }
+
+    protected static function getMemoized($key, $setter = null) {
+        if(! isset(static::$store[static::$className][$key]) && $setter instanceof \Closure) {
+            static::$store[static::$className][$key] = $setter();
+        }
+
+        return static::$store[static::$className][$key] ?: null;
     }
 }
