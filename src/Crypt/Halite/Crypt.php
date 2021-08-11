@@ -7,8 +7,9 @@ use ParagonIE\HiddenString\HiddenString;
 use Devsrv\Aquastrap\Exceptions\CryptException;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
 use ParagonIE\Halite\Symmetric\EncryptionKey;
+use Devsrv\Aquastrap\Contracts\Crypto;
 
-class Crypt {
+class Crypt implements Crypto {
     protected static function getKey() : EncryptionKey {
         $key = config('aquastrap.encryption.strategy.halite.key_path');
 
