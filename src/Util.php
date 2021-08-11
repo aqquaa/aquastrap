@@ -18,20 +18,15 @@ class Util
     public static function getPublicMethods(string $className) : array {
         $reflection = new ReflectionClass($className);
 
-        $parent_public_methods = collect(
-            $reflection->getParentClass() ? 
-                $reflection->getParentClass()->getMethods(ReflectionMethod::IS_PUBLIC) : 
-                []
-            )
-            ->map(function(ReflectionMethod $method) { return $method->getName(); })
-            ->all();
-
         return collect($reflection->getMethods(ReflectionMethod::IS_PUBLIC))
             ->reject(function (ReflectionMethod $method) {
                 return self::shouldIgnore($method->getName());
             })
-            ->reject(function (ReflectionMethod $method) use ($parent_public_methods) {
-                return in_array($method->getName(), $parent_public_methods);
+            ->reject(function (ReflectionMethod $method) use ($className) {
+                return self::ignoreParentPublicMethods($className, $method->getName());
+            })
+            ->reject(function (ReflectionMethod $method) use ($className) {
+                return self::ignoreGuardedMethods($className, $method->getName());
             })
             ->map(function (ReflectionMethod $method) {
                 return $method->getName();
@@ -54,6 +49,31 @@ class Util
             'info',
             'danger'
         ];
+    }
+
+    protected static function ignoreParentPublicMethods(string $className, string $name)
+    {
+        $reflection = new ReflectionClass($className);
+
+        $parent_public_methods = collect(
+            $reflection->getParentClass() ? 
+            $reflection->getParentClass()->getMethods(ReflectionMethod::IS_PUBLIC) : 
+            []
+        )
+        ->map(function(ReflectionMethod $method) { return $method->getName(); })
+        ->all();
+
+        return in_array($name, $parent_public_methods);
+    }
+
+    protected static function ignoreGuardedMethods(string $className, string $name)
+    {
+        if(! property_exists($className, 'aquaGuard')) return false;
+
+        $aquaGuardProp = (new ReflectionClass($className))->getProperty('aquaGuard');
+        $aquaGuardProp->setAccessible(true);
+
+        return in_array($name, $aquaGuardProp->getValue());
     }
 
     public static function isAquaComponent(string $className) : bool {

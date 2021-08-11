@@ -72,7 +72,7 @@ class AquaRoute extends Controller
             class_exists($componentClass) &&
             Util::isAquaComponent($componentClass) &&
             method_exists($componentClass, $method) &&
-            (new ReflectionMethod($componentClass, $method))->isPublic(),
+            in_array($method, Util::getPublicMethods($componentClass)),
             403,
             'Aquastrap Request Restricted'
         );
