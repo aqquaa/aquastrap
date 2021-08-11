@@ -30,23 +30,10 @@ trait AquaSync
     /**
      * I need $_aquaDrips to be available in the view
      * 
-     * useful for Blade components as any public method is automatically converted
-     * to callable variable in the view i.e nothing extra needed to link the view
-     * with the class
-     */
-    public function _aquaDrips() : array {
-        return (new GenerateRecipe((string) self::class))->make($this);
-    }
-
-    /**
-     * I need $_aquaDrips to be available in the view
-     * 
-     * when not using Blade component this method is handy for making
-     * $_aquaDrips available
      */
     protected function aquaRecipes() : array {
         return [
-            '_aquaDrips' => function() { return (new GenerateRecipe((string) self::class))->make($this); }
+            '_aquaDrips' => (new GenerateRecipe((string) self::class))->make($this)
         ];
     }
 }
