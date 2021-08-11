@@ -20,4 +20,9 @@ class CryptException extends RuntimeException
     {
         return new static("Aquastrap Crypt Exception: Unable to decrypt.  {$content}");
     }
+
+    public static function shouldImplementContract($strategy, $contract)
+    {
+        return new static("Aquastrap Crypt Exception: \"{$strategy}\" Crypter should implement {$contract}");
+    }
 }
