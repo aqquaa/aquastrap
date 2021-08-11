@@ -18,11 +18,13 @@ class Util
     public static function getPublicMethods(string $className) : array {
         $reflection = new ReflectionClass($className);
 
-        $parent_public_methods = $reflection->getParentClass() ? 
-                            collect($reflection->getParentClass()->getMethods(ReflectionMethod::IS_PUBLIC))
-                            ->map(function(ReflectionMethod $method) {
-                                return $method->getName();
-                            })->all() : [];
+        $parent_public_methods = collect(
+            $reflection->getParentClass() ? 
+                $reflection->getParentClass()->getMethods(ReflectionMethod::IS_PUBLIC) : 
+                []
+            )
+            ->map(function(ReflectionMethod $method) { return $method->getName(); })
+            ->all();
 
         return collect($reflection->getMethods(ReflectionMethod::IS_PUBLIC))
             ->reject(function (ReflectionMethod $method) {
