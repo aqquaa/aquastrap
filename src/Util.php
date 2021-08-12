@@ -68,12 +68,12 @@ class Util
 
     protected static function ignoreGuardedMethods(string $className, string $name)
     {
-        if(! property_exists($className, 'aquaGuard')) return false;
+        if(! property_exists($className, 'guarded')) return false;
 
-        $aquaGuardProp = (new ReflectionClass($className))->getProperty('aquaGuard');
-        $aquaGuardProp->setAccessible(true);
+        $guardedProp = (new ReflectionClass($className))->getProperty('guarded');
+        $guardedProp->setAccessible(true);
 
-        return in_array($name, $aquaGuardProp->getValue());
+        return in_array($name, $guardedProp->getValue());
     }
 
     public static function isAquaComponent(string $className) : bool {
