@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\App as AppContainer;
 use Devsrv\Aquastrap\Util;
 use Devsrv\Aquastrap\Crypt\Crypt;
 use Devsrv\Aquastrap\Exceptions\RequestException;
+use Illuminate\Auth\Access\Response;
 
 class AquaRoute extends Controller
 {
@@ -26,7 +27,7 @@ class AquaRoute extends Controller
         $this->args             = $args;
         $this->method           = $method;
 
-        $this->applyMiddlewares($this->componentClass);
+        $this->applyMiddlewares();
     }
 
     public function Process(Request $request) {
@@ -38,6 +39,8 @@ class AquaRoute extends Controller
         } catch (\Exception $th) {
             throw RequestException::failedToInstantiate($this->componentClass);
         }
+        
+        $this->isAuthorized($instance);
 
         return $instance->{$this->method}($request);
     }
@@ -104,6 +107,23 @@ class AquaRoute extends Controller
             $middlewaresProp->setAccessible(true);
 
             $this->middleware($middlewaresProp->getValue());
+        }
+    }
+
+    private function isAuthorized($instance) {
+        if(method_exists($instance, 'authorize')) {
+            $authorized = $instance->authorize();
+
+            if(is_bool($authorized)) {
+                abort_unless($authorized, 403, 'Unauthorized');
+                return;
+            }
+
+            abort_if(
+                $authorized instanceof Response && ! $authorized->allowed(),
+                403,
+                $authorized->message() ?? 'Unauthorized'
+            );
         }
     }
 }
