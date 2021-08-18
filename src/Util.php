@@ -1,11 +1,11 @@
 <?php
 
-namespace Devsrv\Aquastrap;
+namespace Aqua\Aquastrap;
 
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionMethod;
-use Devsrv\Aquastrap\Traits\AquaSync;
+use Aqua\Aquastrap\Traits\AquaSync;
 
 class Util
 {

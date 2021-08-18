@@ -1,9 +1,9 @@
 <?php
 
-namespace Devsrv\Aquastrap\Traits;
+namespace Aqua\Aquastrap\Traits;
 
 use Illuminate\Http\JsonResponse;
-use Devsrv\Aquastrap\GenerateRecipe;
+use Aqua\Aquastrap\GenerateRecipe;
 use Illuminate\Support\Facades\Response;
 
 trait AquaSync

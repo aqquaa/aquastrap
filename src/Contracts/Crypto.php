@@ -1,6 +1,6 @@
 <?php
 
-namespace Devsrv\Aquastrap\Contracts;
+namespace Aqua\Aquastrap\Contracts;
 
 interface Crypto {
     public static function Encrypt(string $plainContent) : string;

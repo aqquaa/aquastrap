@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::any('/aquastrap', [\Devsrv\Aquastrap\AquaRoute::class, 'Process'])->name('aquastrap.request');
+Route::any('/aquastrap', [\Aqua\Aquastrap\AquaRoute::class, 'Process'])->name('aquastrap.request');

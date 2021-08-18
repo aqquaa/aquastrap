@@ -1,6 +1,6 @@
 <?php
 
-namespace Devsrv\Aquastrap;
+namespace Aqua\Aquastrap;
 
 use Illuminate\View\Component as NativeViewComponent;
 

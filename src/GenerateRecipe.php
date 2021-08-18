@@ -1,10 +1,10 @@
 <?php
 
-namespace Devsrv\Aquastrap;
+namespace Aqua\Aquastrap;
 
-use Devsrv\Aquastrap\Util;
+use Aqua\Aquastrap\Util;
 use Opis\Closure\SerializableClosure;
-use Devsrv\Aquastrap\Crypt\Crypt;
+use Aqua\Aquastrap\Crypt\Crypt;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 

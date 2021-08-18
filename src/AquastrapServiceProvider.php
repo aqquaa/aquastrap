@@ -1,6 +1,6 @@
 <?php
 
-namespace Devsrv\Aquastrap;
+namespace Aqua\Aquastrap;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\{ Blade, Route };
@@ -23,25 +23,25 @@ class AquastrapServiceProvider extends ServiceProvider
     protected function registerDirectives() {
         Blade::directive('aqua', function () {
             return "<?php 
-            echo \Devsrv\Aquastrap\AquaDirective::networkHandler(\$_aquaDrips);
+            echo \Aqua\Aquastrap\AquaDirective::networkHandler(\$_aquaDrips);
             ?>";
         });
 
         Blade::directive('aquaScripts', function () {
             return "<?php 
-            echo \Devsrv\Aquastrap\AquaDirective::scripts();
+            echo \Aqua\Aquastrap\AquaDirective::scripts();
             ?>";
         });
 
         Blade::directive('aquaConfig', function () {
             return "<?php 
-            echo \Devsrv\Aquastrap\AquaDirective::setComponentConfig(\$_aquaDrips);
+            echo \Aqua\Aquastrap\AquaDirective::setComponentConfig(\$_aquaDrips);
             ?>";
         });
 
         Blade::directive('aquaLink', function ($link) {
             return "<?php 
-            \$_aquaDrips = \Devsrv\Aquastrap\AquaDirective::linkComponent($link);
+            \$_aquaDrips = \Aqua\Aquastrap\AquaDirective::linkComponent($link);
             ?>";
         });
     }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Devsrv\Aquastrap\Crypt\Native;
+namespace Aqua\Aquastrap\Crypt\Native;
 
-use Devsrv\Aquastrap\Contracts\Crypto;
+use Aqua\Aquastrap\Contracts\Crypto;
 use Illuminate\Support\Facades\Crypt as NativeCrypt;
 
 class Crypt implements Crypto {

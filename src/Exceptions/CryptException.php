@@ -1,6 +1,6 @@
 <?php
 
-namespace Devsrv\Aquastrap\Exceptions;
+namespace Aqua\Aquastrap\Exceptions;
 
 use RuntimeException;
 

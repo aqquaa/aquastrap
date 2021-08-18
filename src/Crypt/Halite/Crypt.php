@@ -1,13 +1,13 @@
 <?php
 
-namespace Devsrv\Aquastrap\Crypt\Halite;
+namespace Aqua\Aquastrap\Crypt\Halite;
 
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\HiddenString\HiddenString;
-use Devsrv\Aquastrap\Exceptions\CryptException;
+use Aqua\Aquastrap\Exceptions\CryptException;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
 use ParagonIE\Halite\Symmetric\EncryptionKey;
-use Devsrv\Aquastrap\Contracts\Crypto;
+use Aqua\Aquastrap\Contracts\Crypto;
 
 class Crypt implements Crypto {
     protected static function getKey() : EncryptionKey {

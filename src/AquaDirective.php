@@ -1,8 +1,8 @@
 <?php
 
-namespace Devsrv\Aquastrap;
+namespace Aqua\Aquastrap;
 
-use Devsrv\Aquastrap\GenerateRecipe;
+use Aqua\Aquastrap\GenerateRecipe;
 
 class AquaDirective
 {

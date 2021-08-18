@@ -1,9 +1,9 @@
 <?php
 
-namespace Devsrv\Aquastrap\Crypt;
+namespace Aqua\Aquastrap\Crypt;
 
-use Devsrv\Aquastrap\Exceptions\CryptException;
-use Devsrv\Aquastrap\Contracts\Crypto;
+use Aqua\Aquastrap\Exceptions\CryptException;
+use Aqua\Aquastrap\Contracts\Crypto;
 
 class Crypt {
     public static $config;

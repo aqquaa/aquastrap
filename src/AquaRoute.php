@@ -1,6 +1,6 @@
 <?php
 
-namespace Devsrv\Aquastrap;
+namespace Aqua\Aquastrap;
 
 use Exception;
 use ReflectionClass;
@@ -8,9 +8,9 @@ use ReflectionMethod;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App as AppContainer;
-use Devsrv\Aquastrap\Util;
-use Devsrv\Aquastrap\Crypt\Crypt;
-use Devsrv\Aquastrap\Exceptions\RequestException;
+use Aqua\Aquastrap\Util;
+use Aqua\Aquastrap\Crypt\Crypt;
+use Aqua\Aquastrap\Exceptions\RequestException;
 use Illuminate\Auth\Access\Response;
 
 class AquaRoute extends Controller
