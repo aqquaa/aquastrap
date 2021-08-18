@@ -17,6 +17,10 @@ class AquastrapServiceProvider extends ServiceProvider
             $this->publishes([
               __DIR__.'/../config/config.php' => config_path('aquastrap.php'),
             ], 'config');
+
+            $this->publishes([
+                __DIR__.'/../dist' => public_path('vendor/aquastrap'),
+            ], 'assets');
         }
     }
 
