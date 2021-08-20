@@ -41,14 +41,14 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
             return res;
         })
         .then(function(data) {
-            if(data.status >= 400) { execLifecycleCallback(id, XHREvent.ERROR, data); }
-
-            if (data.status < 300) { execLifecycleCallback(id, XHREvent.SUCCESS, data); }
-
             const status = data.status;
+            const response = data.json().then(r => ({status, data: r}));
 
-            return data.json()
-            .then(r => ({status, data: r}));
+            if(status >= 400) { execLifecycleCallback(id, XHREvent.ERROR, response); }
+
+            if(status < 300) { execLifecycleCallback(id, XHREvent.SUCCESS, response); }
+
+            return response;
         })
         .catch(function(error) {
             execLifecycleCallback(id, XHREvent.ERROR, error);
