@@ -1,4 +1,6 @@
 import { _hasProperty } from './../helper/util';
+import { XHREvent } from './../helper/types';
+import { LIFECYCLE_CONFIG_NAME } from './../config';
 
 window._aquaCore = {
     createNewComponent(id) {
@@ -21,8 +23,10 @@ window._aquaCore = {
                 modify = {
                     ...componentItem,
                     config: Object.assign({}, componentItem.config, { 
-                        ...( _hasProperty(value, 'success') && {success: value.success} ),
-                        ...( _hasProperty(value, 'error') && {error: value.error} )
+                        ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.START])   &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.START]]:     value[LIFECYCLE_CONFIG_NAME[XHREvent.START]]} ), // ...( _hasProperty(value, 'start')   &&  {start: value.start} )
+                        ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]) &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]:   value[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]} ),
+                        ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.ERROR])   &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]:     value[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]} ),
+                        ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.FINISH])  &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]:    value[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]} )
                     })
                 }
 
@@ -43,8 +47,10 @@ window._aquaCore = {
             case 'config':
                 window._aquastrap.config = {
                     ...window._aquastrap.config,
-                    ...( _hasProperty(value, 'success') && {success: value.success} ),
-                    ...( _hasProperty(value, 'error') && {error: value.error} )
+                    ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.START])   &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.START]]:      value[LIFECYCLE_CONFIG_NAME[XHREvent.START]]} ),
+                    ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]) &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]:    value[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]} ),
+                    ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.ERROR])   &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]:      value[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]} ),
+                    ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.FINISH])  &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]:     value[[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]]} )
                 };
 
                 break;
@@ -54,36 +60,24 @@ window._aquaCore = {
         }
         
     },
-    resolveSuccessCallback(id) {
+    /**event:  XHREvent: { START | SUCCESS | ERROR | FINISH }*/
+    resolveLifecycleCallback(event, id) {
         const componentIndex = window._aquastrap.component.findIndex(c => c.id === id);
         const component = componentIndex !== -1 ? window._aquastrap.component[componentIndex] : undefined;
         const globalConfig = window._aquastrap.config;
 
-        if(component && _hasProperty(component.config, 'success') && typeof component.config.success === 'function') {
-            return component.config.success;
+        const configProperty = LIFECYCLE_CONFIG_NAME[event];
+
+        if(component && _hasProperty(component.config, configProperty) && typeof component.config[configProperty] === 'function') {
+            return component.config[configProperty];
         }
 
-        if(_hasProperty(globalConfig, 'success')) {
-            return globalConfig.success;
-        }
-
-        return () => {};
-    },
-    resolveErrorCallback(id) {
-        const componentIndex = window._aquastrap.component.findIndex(c => c.id === id);
-        const component = componentIndex !== -1 ? window._aquastrap.component[componentIndex] : undefined;
-        const globalConfig = window._aquastrap.config;
-
-        if(component && _hasProperty(component.config, 'error') && typeof component.config.error === 'function') {
-            return component.config.error;
-        }
-
-        if(_hasProperty(globalConfig, 'error')) {
-            return globalConfig.error;
+        if(_hasProperty(globalConfig, configProperty)) {
+            return globalConfig[configProperty];
         }
 
         return () => {};
-    },
+    }
 }
 
 export function _setAquaConfig(configs, id = '') {

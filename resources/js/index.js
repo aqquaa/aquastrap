@@ -1,15 +1,24 @@
 import { _findComponentById, _hasProperty } from './helper/util';
 import { _setAquaConfig } from './core/index';
 import { _replicatePublicMethods } from './network';
-import { Method } from './helper/types';
+import { Method, XHREvent } from './helper/types';
+import { LIFECYCLE_CONFIG_NAME } from './config';
 
 window.Aquastrap = {
-    onSuccess(succesCallback) {
-        _setAquaConfig({success: succesCallback});
+    onStart(callback) {
+        _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.START]]: callback});
         return this;
     },
-    onError(errCallback) {
-        _setAquaConfig({error: errCallback});
+    onSuccess(callback) {
+        _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]: callback});
+        return this;
+    },
+    onError(callback) {
+        _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]: callback});
+        return this;
+    },
+    onFinish(callback) {
+        _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]: callback});
         return this;
     }
 };
@@ -85,12 +94,20 @@ window._aquaGenerate = function (id, key, componentIngredient, methods) {
 
 window._registerAquaConfig = function (id = '') {
     return {
-        onSuccess(succesCallback) {
-            _setAquaConfig({success: succesCallback}, id);
+        onStart(callback) {
+            _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.START]]: callback}, id);
             return this;
         },
-        onError(errCallback) {
-            _setAquaConfig({error: errCallback}, id);
+        onSuccess(callback) {
+            _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]: callback}, id);
+            return this;
+        },
+        onError(callback) {
+            _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]: callback}, id);
+            return this;
+        },
+        onFinish(callback) {
+            _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]: callback}, id);
             return this;
         },
     }

@@ -1,4 +1,4 @@
-import { Method, Callback } from './helper/types';
+import { Method, XHREvent } from './helper/types';
 import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl } from './helper/util';
 
 function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
@@ -34,14 +34,16 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
             }),
         };
 
+        execLifecycleCallback(id, XHREvent.START, null);
+
         const reponse = await fetch(url, options)
         .then(res => {
             return res;
         })
         .then(function(data) {
-            if(data.status >= 400) { execUserCallback(id, Callback.ERROR, data); }
+            if(data.status >= 400) { execLifecycleCallback(id, XHREvent.ERROR, data); }
 
-            if (data.status < 300) { execUserCallback(id, Callback.SUCCESS, data); }
+            if (data.status < 300) { execLifecycleCallback(id, XHREvent.SUCCESS, data); }
 
             const status = data.status;
 
@@ -49,31 +51,18 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
             .then(r => ({status, data: r}));
         })
         .catch(function(error) {
-            execUserCallback(id, Callback.ERROR, data);
+            execLifecycleCallback(id, XHREvent.ERROR, error);
 
             return error;
-        });
+        })
+        .finally(_ => execLifecycleCallback(id, XHREvent.FINISH, null));
 
         return reponse;
     };
 }
 
-function execUserCallback(id, type, data) {
-    switch (type) {
-        case Callback.SUCCESS:
-            _aquaCore.resolveSuccessCallback(id)(data);
-            break;
-        case Callback.ERROR:
-            _aquaCore.resolveErrorCallback(id)(data);
-            break;
-    
-        case Callback.START:
-            
-            break;
-    
-        default:
-            break;
-    }
+function execLifecycleCallback(id, type, data) {
+    _aquaCore.resolveLifecycleCallback(type, id)(data);
 }
 
 export function _replicatePublicMethods(id, key, classIngredient, methodNames) {
