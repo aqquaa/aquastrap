@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.4-alpha - 2021-08-20
+
+- fix readablestream already read
+- instead raw readable data return parsed promise from xhr success
+
 ## v0.0.3-alpha - 2021-08-20
 
 - added xhr lifecycle callback support - `onStart`, `onFinish`
