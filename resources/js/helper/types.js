@@ -6,7 +6,7 @@ export const Method = {
     DELETE: 'delete',
 }
 
-export const Callback = {
+export const XHREvent = {
     SUCCESS: 'success',
     ERROR: 'error',
     START: 'start',
