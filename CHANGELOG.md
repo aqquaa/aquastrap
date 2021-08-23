@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.5-alpha - 2021-08-23
+
+- fix readablestream already read / user callback passed response incorrect
+
 ## v0.0.4-alpha - 2021-08-20
 
 - fix readablestream already read
