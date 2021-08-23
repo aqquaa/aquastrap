@@ -42,13 +42,15 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
         })
         .then(function(data) {
             const status = data.status;
-            const response = data.json().then(r => ({status, data: r}));
 
-            if(status >= 400) { execLifecycleCallback(id, XHREvent.ERROR, response); }
+            return data.json().then(r => {
+                let response = {status, data: r};
 
-            if(status < 300) { execLifecycleCallback(id, XHREvent.SUCCESS, response); }
+                if(status >= 400) execLifecycleCallback(id, XHREvent.ERROR, response);
+                if(status < 300) execLifecycleCallback(id, XHREvent.SUCCESS, response);
 
-            return response;
+                return response;
+            });
         })
         .catch(function(error) {
             execLifecycleCallback(id, XHREvent.ERROR, error);
