@@ -43,13 +43,19 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
         .then(function(data) {
             const status = data.status;
 
-            return data.json().then(r => {
+            return data.json()
+            .then(r => {
                 let response = {status, data: r};
 
                 if(status >= 400) execLifecycleCallback(id, XHREvent.ERROR, response);
                 if(status < 300) execLifecycleCallback(id, XHREvent.SUCCESS, response);
 
                 return response;
+            })
+            .catch(e => {
+                let response = {status, data: {error: e, message: data.statusText + ' - unable to parse response'}};
+
+                execLifecycleCallback(id, XHREvent.ERROR, response);
             });
         })
         .catch(function(error) {
