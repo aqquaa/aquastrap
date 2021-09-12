@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.0.7-alpha - 2021-09-12
+
+#### added
+- server returned notification handle & dispatch window event `aqua.notification`
+
+#### improvements
+- notification trait separated from primary AquaSync trait & used in AquaSync
+- js scripts refactor
+
 ## v0.0.6-alpha - 2021-08-31
 
 - fix non json data response decode attempt fail catch
