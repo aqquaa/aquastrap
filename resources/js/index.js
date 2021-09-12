@@ -1,6 +1,6 @@
 import { _findComponentById, _hasProperty } from './helper/util';
 import { _setAquaConfig } from './core/index';
-import { _replicatePublicMethods } from './network';
+import { _replicatePublicMethods } from './network/network';
 import { Method, XHREvent } from './helper/types';
 import { LIFECYCLE_CONFIG_NAME } from './config';
 

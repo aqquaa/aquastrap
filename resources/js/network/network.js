@@ -1,5 +1,7 @@
-import { Method, XHREvent } from './helper/types';
-import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl } from './helper/util';
+import { Method, XHREvent } from '../helper/types';
+import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl } from '../helper/util';
+import { execLifecycleCallback } from './lifecycleHook';
+import processResponseHeader from './headerManager';
 
 function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
     return async (data = {}, method = Method.POST, signal = null) => {
@@ -38,6 +40,8 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
 
         const reponse = await fetch(url, options)
         .then(res => {
+            processResponseHeader(res);
+
             return res;
         })
         .then(function(data) {
@@ -67,10 +71,6 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
 
         return reponse;
     };
-}
-
-function execLifecycleCallback(id, type, data) {
-    _aquaCore.resolveLifecycleCallback(type, id)(data);
 }
 
 export function _replicatePublicMethods(id, key, classIngredient, methodNames) {
