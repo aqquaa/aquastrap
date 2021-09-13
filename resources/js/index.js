@@ -22,7 +22,11 @@ window.Aquastrap = {
     onFinish(callback) {
         _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]: callback});
         return this;
-    }
+    },
+    onNotification(callback) {
+        _setAquaConfig({[LIFECYCLE_CONFIG_NAME.notification]: callback});
+        return this;
+    },
 };
 
 /**
@@ -58,7 +62,7 @@ function createHook(reactivity, networkHandler) {
 
     return {
         reactiveState: reactivity.getStates(),
-        state: initialState,
+        state: {...initialState},
         submit(form, type = Method.POST) {
             setState(reactivity, this, {
                 processing: true,
@@ -128,6 +132,10 @@ window._registerAquaConfig = function (id = '') {
         },
         onFinish(callback) {
             _setAquaConfig({[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]: callback}, id);
+            return this;
+        },
+        onNotification(callback) {
+            _setAquaConfig({[LIFECYCLE_CONFIG_NAME.notification]: callback}, id);
             return this;
         },
     }

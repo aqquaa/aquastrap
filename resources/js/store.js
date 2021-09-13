@@ -13,6 +13,7 @@ window._aquastrap =  window._aquastrap || {
         [LIFECYCLE_CONFIG_NAME[XHREvent.START]]: () => {}, 
         [LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]: () => {}, 
         [LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]: () => {}, 
-        [LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]: () => {}
+        [LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]: () => {},
+        notification: () => {}
     }
 };

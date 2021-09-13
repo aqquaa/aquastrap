@@ -27,7 +27,8 @@ window._aquaCore = {
                         ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.START])   &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.START]]:     value[LIFECYCLE_CONFIG_NAME[XHREvent.START]]} ), // ...( _hasProperty(value, 'start')   &&  {start: value.start} )
                         ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]) &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]:   value[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]} ),
                         ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.ERROR])   &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]:     value[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]} ),
-                        ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.FINISH])  &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]:    value[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]} )
+                        ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.FINISH])  &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]:    value[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]} ),
+                        ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME.notification)      &&  {[LIFECYCLE_CONFIG_NAME.notification]:        value[LIFECYCLE_CONFIG_NAME.notification]} ),
                     })
                 }
 
@@ -51,7 +52,8 @@ window._aquaCore = {
                     ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.START])   &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.START]]:      value[LIFECYCLE_CONFIG_NAME[XHREvent.START]]} ),
                     ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]) &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]:    value[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]} ),
                     ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.ERROR])   &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]:      value[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]} ),
-                    ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.FINISH])  &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]:     value[[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]]} )
+                    ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.FINISH])  &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]:     value[[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]]} ),
+                    ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME.notification)      &&  {[LIFECYCLE_CONFIG_NAME.notification]:        value[LIFECYCLE_CONFIG_NAME.notification]} ),
                 };
 
                 break;
@@ -61,7 +63,7 @@ window._aquaCore = {
         }
         
     },
-    /**event:  XHREvent: { START | SUCCESS | ERROR | FINISH }*/
+    /**event:  XHREvent: { START | SUCCESS | ERROR | FINISH } | notification */
     resolveLifecycleCallback(event, id) {
         const componentIndex = window._aquastrap.component.findIndex(c => c.id === id);
         const component = componentIndex !== -1 ? window._aquastrap.component[componentIndex] : undefined;

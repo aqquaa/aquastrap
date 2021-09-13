@@ -5,4 +5,5 @@ export const LIFECYCLE_CONFIG_NAME = {
     [XHREvent.SUCCESS]: 'success',
     [XHREvent.ERROR]: 'error',
     [XHREvent.FINISH]: 'finish',
+    notification: 'notification'
 }
