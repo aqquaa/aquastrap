@@ -58,7 +58,7 @@ export function reactivityManager({id, key}, method) {
 
             return component.states[stateItemIndex].state;
         },
-        setState(method, newState) {
+        setState(newState) {
             const currState = this.getStates();
 
             for (const [state, value] of Object.entries(newState)) {
