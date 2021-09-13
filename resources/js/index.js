@@ -1,8 +1,10 @@
+import { observable, observe } from '@nx-js/observer-util';
 import { _findComponentById, _hasProperty } from './helper/util';
 import { _setAquaConfig } from './core/index';
 import { _replicatePublicMethods } from './network/network';
 import { Method, XHREvent } from './helper/types';
 import { LIFECYCLE_CONFIG_NAME } from './config';
+import { reactivityManager, initialState, setState } from './core/state';
 
 window.Aquastrap = {
     onStart(callback) {
@@ -23,73 +25,91 @@ window.Aquastrap = {
     }
 };
 
+/**
+ * id: the component class identifier 
+ * key: the component instance indentifier
+ */
 window._aquaGenerate = function (id, key, componentIngredient, methods) {
     const methodsAccessor = _replicatePublicMethods(id, key, componentIngredient, methods);
 
-    let hook = {};
+    return {
+        hook: resolveHooks(id, key, methodsAccessor),
+        ...methodsAccessor
+    }
+}
+
+function resolveHooks(id, key, methodsAccessor) {
+    let hooks = {};
 
     for (const [name, networkHandler] of Object.entries(methodsAccessor)) {
-        hook = {
-            ...hook,
+        hooks = {
+            ...hooks,
             get [name]() {
-                return {
-                    processing: false,
-                    result: null,
-                    statusCode: '',
-                    errors: {},
-                    message: '',
-                    abortController: null,
-                    get hasValidationError() {
-                        return ! this.processing && Object.keys(this.errors).length > 0;
-                    },
-                    submit(form, type = Method.POST) {
-                        this.processing = true;
-                        this.result = null;
-                        this.statusCode = '';
-                        this.errors = {};
-                        this.message = '';
-                        this.abortController = new AbortController();
-
-                        networkHandler(form, type, this.abortController.signal)
-                        .then(res => {
-                            this.statusCode = res.status;
-                            this.result = res.data;
-                            this.message = _hasProperty(res.data, 'message') ? res.data.message : '';
-                            this.errors = res.status === 422 && _hasProperty(res.data, 'errors') ? res.data.errors : {};
-                        })
-                        .catch(err => {
-                            this.message = 'Network Request failed !';
-                        })
-                        .finally(_ => this.processing = false)
-                    },
-                    cancel() {
-                        if(this.abortController)
-                        this.abortController.abort();
-                    },
-                    get(form) {
-                        this.submit(form, Method.GET);
-                    },
-                    post(form) {
-                        this.submit(form, Method.POST);
-                    },
-                    put(form) {
-                        this.submit(form, Method.PUT);
-                    },
-                    patch(form) {
-                        this.submit(form, Method.PATCH);
-                    },
-                    delete(form) {
-                        this.submit(form, Method.DELETE);
-                    }
-                }
+                return createHook(reactivityManager({id, key}, name), networkHandler);
             }
         }
     }
 
+    return hooks;
+}
+
+function createHook(reactivity, networkHandler) {
+    reactivity.initStates();
+
     return {
-        hook,
-        ...methodsAccessor
-    }
+        reactiveState: reactivity.getStates(),
+        state: initialState,
+        submit(form, type = Method.POST) {
+            setState(reactivity, this, {
+                processing: true,
+                result: null,
+                statusCode: '',
+                errors: {},
+                message: '',
+                notification: {type: '', message: ''},
+                abortController: new AbortController()
+            });
+
+            networkHandler(form, type, this.state.abortController.signal)
+            .then(res => {
+                setState(reactivity, this, {
+                    statusCode: res.status,
+                    result: res.data,
+                    errors: res.status === 422 && _hasProperty(res.data, 'errors') ? res.data.errors : {},
+                    message: _hasProperty(res.data, 'message') ? res.data.message : '',
+                });
+            })
+            .catch(err => {
+                setState(reactivity, this, {
+                    message: 'Network Request failed !'
+                });
+            })
+            .finally(_ => {
+                setState(reactivity, this, {
+                    processing: false
+                });
+            })
+        },
+        cancel() {
+            if(this.state.abortController)
+            this.state.abortController.abort();
+        },
+        get(form) {
+            this.submit(form, Method.GET);
+        },
+        post(form) {
+            this.submit(form, Method.POST);
+        },
+        put(form) {
+            this.submit(form, Method.PUT);
+        },
+        patch(form) {
+            this.submit(form, Method.PATCH);
+        },
+        delete(form) {
+            this.submit(form, Method.DELETE);
+        }
+    };
 }
 
 window._registerAquaConfig = function (id = '') {

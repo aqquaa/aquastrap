@@ -15,6 +15,7 @@
         "laravel-mix": "^6.0.23"
     },
     "dependencies": {
+        "@nx-js/observer-util": "^4.2.2",
         "deepmerge": "^4.2.2",
         "lodash": "^4.17.21",
         "qs": "^6.10.1"

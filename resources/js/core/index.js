@@ -1,4 +1,4 @@
-import { _hasProperty } from './../helper/util';
+import { _hasProperty, _findComponentById } from './../helper/util';
 import { XHREvent } from './../helper/types';
 import { LIFECYCLE_CONFIG_NAME } from './../config';
 
@@ -8,7 +8,8 @@ window._aquaCore = {
             ...window._aquastrap.component,
             {
                 id: id, 
-                config: {}
+                config: {},
+                states: []
             }
         ];
     },
