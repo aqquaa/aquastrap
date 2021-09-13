@@ -40,6 +40,12 @@ class GenerateRecipe {
         return $this->recipe();
     }
 
+    /**
+     * id -> identifier for the class (component / controller / any target class to be used for handling request)
+     * key -> identifier for the component instance (useful for blade components where same component can be used multiple times in a page)
+     * ingredient -> class dependencies required to instantiate
+     * methods -> list of allowed methods of the class to handle request
+     */
     private function recipe() : array {
         $ingredient = (string) $this->getComponentIngredient();
 
