@@ -1,6 +1,6 @@
-export function notify(notification) {
+export function notify(notification, { id, key }) {
     const notificationEvent = new CustomEvent("aqua.notification", {
-        detail: { ...notification },
+        detail: { component: { id, key }, ...notification },
         cancelable: true,
         bubbles: true
     });

@@ -40,7 +40,7 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
 
         const reponse = await fetch(url, options)
         .then(res => {
-            processResponseHeader(res);
+            processResponseHeader(res, id, key);
 
             return res;
         })
