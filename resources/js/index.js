@@ -1,10 +1,9 @@
-import { observable, observe } from '@nx-js/observer-util';
 import { _findComponentById, _hasProperty } from './helper/util';
 import { _setAquaConfig } from './core/index';
 import { _replicatePublicMethods } from './network/network';
 import { Method, XHREvent } from './helper/types';
 import { LIFECYCLE_CONFIG_NAME } from './config';
-import { reactivityManager, initialState, setState } from './core/state';
+import { reactivityManager, initialState, setState, dispatch } from './core/state';
 
 window.Aquastrap = {
     onStart(callback) {
@@ -64,34 +63,17 @@ function createHook(reactivity, networkHandler) {
         reactiveState: reactivity.getStates(),
         state: {...initialState},
         submit(form, type = Method.POST) {
-            setState(reactivity, this, {
-                processing: true,
-                result: null,
-                statusCode: '',
-                errors: {},
-                message: '',
-                notification: {type: '', message: ''},
-                abortController: new AbortController()
-            });
+            dispatch('START', {}, this, reactivity);
 
             networkHandler(form, type, this.state.abortController.signal)
             .then(res => {
-                setState(reactivity, this, {
-                    statusCode: res.status,
-                    result: res.data,
-                    errors: res.status === 422 && _hasProperty(res.data, 'errors') ? res.data.errors : {},
-                    message: _hasProperty(res.data, 'message') ? res.data.message : '',
-                });
+                dispatch('SUCCESS', res, this, reactivity);
             })
             .catch(err => {
-                setState(reactivity, this, {
-                    message: 'Network Request failed !'
-                });
+                dispatch('ERROR', {}, this, reactivity);
             })
             .finally(_ => {
-                setState(reactivity, this, {
-                    processing: false
-                });
+                dispatch('FINALLY', {}, this, reactivity);
             })
         },
         cancel() {

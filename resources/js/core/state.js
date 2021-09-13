@@ -81,6 +81,46 @@ export const initialState = {
     } 
 }
 
+function reducer(action, payload) {
+    switch (action) {
+        case 'SUCCESS':
+            const { status, data } = payload;
+            return {
+                statusCode: status,
+                result: data,
+                errors: status === 422 && _hasProperty(data, 'errors') ? data.errors : {},
+                message: _hasProperty(data, 'message') ? data.message : '',
+            };
+
+        case 'ERROR':
+            return {
+                message: 'Network Request failed !'
+            };
+
+        case 'FINALLY':
+            return {
+                processing: false
+            };
+    
+        default:
+            return {
+                processing: true,
+                result: null,
+                statusCode: '',
+                errors: {},
+                message: '',
+                notification: {type: '', message: ''},
+                abortController: new AbortController()
+            };
+    }
+}
+
+export function dispatch(action, payload, context, reactivity) {
+    const state = reducer(action, payload);
+
+    setState(reactivity, context, state);
+}
+
 export function setState(reactivity, context, newState) {
     const currReactiveState = reactivity.getStates();
 
