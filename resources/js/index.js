@@ -80,6 +80,17 @@ function createHook(reactivity, networkHandler) {
             if(this.state.abortController)
             this.state.abortController.abort();
         },
+        resetStates() {
+            dispatch({type: 'RESET', payload: {}}, this, reactivity);
+        },
+        resetState(toReset) {
+            if(Array.isArray(toReset)) {
+                toReset.forEach(item => dispatch({type: 'RESET_ONLY', payload: {item}}, this, reactivity));
+                return;
+            }
+
+            dispatch({type: 'RESET_ONLY', payload: {item: toReset}}, this, reactivity)
+        },
         get(form) {
             this.submit(form, Method.GET);
         },

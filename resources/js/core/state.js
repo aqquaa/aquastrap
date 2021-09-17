@@ -108,6 +108,15 @@ function reducer(action, payload = {}) {
 
         case 'RESET':
             return {...initialState};
+
+        case 'RESET_ONLY':
+            const { item } = payload;
+
+            if(! _hasProperty(initialState, item)) { throw new Error(`invalid state item ${item}`); }
+
+            return {
+                [item]: initialState[item]
+            };
     
         default:
             throw new Error();
