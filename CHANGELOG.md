@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.0.8-alpha - 2021-09-17
+
+#### added
+- all states can be reset by `resetStates()`
+- one or more states can be reset by `resetState('processing')` or `resetState(['processing', 'statusCode'])`
+- server returned notification handle & dispatch window event `aqua.notification`
+
+#### changed
+- states now can only be accessed by `state` property e.g. state.processing
+
 ## v0.0.7-alpha - 2021-09-12
 
 #### added
