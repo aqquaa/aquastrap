@@ -57,23 +57,23 @@ function resolveHooks(id, key, methodsAccessor) {
 }
 
 function createHook(reactivity, networkHandler) {
-    reactivity.initStates();
+    reactivity.initStates();    // good place to initiate component entity state
 
     return {
-        reactiveState: reactivity.getStates(),
+        reactiveState: reactivity.getStates(),  // make sure to initStates() before getting
         state: {...initialState},
         submit(form, type = Method.POST) {
-            dispatch('START', {}, this, reactivity);
+            dispatch({type: 'START', payload: {}}, this, reactivity);
 
             networkHandler(form, type, this.state.abortController.signal)
             .then(res => {
-                dispatch('SUCCESS', res, this, reactivity);
+                dispatch({type: 'SUCCESS', payload: res}, this, reactivity);
             })
             .catch(err => {
-                dispatch('ERROR', {}, this, reactivity);
+                dispatch({type: 'ERROR', payload: {}}, this, reactivity);
             })
             .finally(_ => {
-                dispatch('FINALLY', {}, this, reactivity);
+                dispatch({type: 'FINALLY', payload: {}}, this, reactivity);
             })
         },
         cancel() {

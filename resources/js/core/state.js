@@ -3,7 +3,17 @@ import { _hasProperty, _findComponentById } from './../helper/util';
 
 export function reactivityManager({id, key}, method) {
     return {
+        entity: {id, key},  // useful in debugging
         boot() {
+            try {
+                const component = _findComponentById(id);
+                if(component) return component;
+            } catch (error) {
+                _aquaCore.createNewComponent(id);
+
+                return _findComponentById(id);
+            }
+
             let componentIndex = window._aquastrap.component.findIndex(c => c.id === id);
             if(componentIndex === -1) {
                 _aquaCore.createNewComponent(id);
@@ -14,45 +24,34 @@ export function reactivityManager({id, key}, method) {
             return componentIndex;
         },
         initStates() {
-            const componentIndex = this.boot();
+            const { index, component } = this.boot();
 
-            const componentItem = window._aquastrap.component[componentIndex];
-
-            const stateItemIndex = componentItem.states.findIndex(s => s.key === key && s.method === method);
+            const stateItemIndex = component.states.findIndex(s => s.key === key && s.method === method);
             if(stateItemIndex !== -1) {
+                // already exists, skip
                 return;
             }
 
             const modify = {
-                ...componentItem,
-                states: [...componentItem.states, {
+                ...component,
+                states: [...component.states, {
                     key: key,
                     method: method,
-                    state: observable({
-                        processing: false,
-                        result: null,
-                        statusCode: '',
-                        errors: {},
-                        message: '',
-                        notification: {type: '', message: ''},
-                        abortController: null,
-                        get hasValidationError() {
-                            return ! this.processing && Object.keys(this.errors).length > 0;
-                        }
-                    })
+                    state: observable({...initialState})
                 }]
             };
 
             window._aquastrap.component = [
-                ...window._aquastrap.component.slice(0, componentIndex),
+                ...window._aquastrap.component.slice(0, index),
                 modify,
-                ...window._aquastrap.component.slice(componentIndex + 1)
+                ...window._aquastrap.component.slice(index + 1)
             ];
         },
         getStates() {
-            const component = _findComponentById(id);
+            const {index, component} = _findComponentById(id);
             const stateItemIndex = component.states.findIndex(s => s.key === key && s.method === method);
             if(stateItemIndex === -1) {
+                console.error('component state missing', this.entity);
                 throw new Error('Aquastrap component state not found');
             }
 
@@ -74,15 +73,20 @@ export const initialState = {
     statusCode: '',
     errors: {},
     message: '',
-    notification: {type: '', message: ''},
     abortController: null,
     get hasValidationError() {
         return ! this.processing && Object.keys(this.errors).length > 0;
     } 
 }
 
-function reducer(action, payload) {
+function reducer(action, payload = {}) {
     switch (action) {
+        case 'START':
+            return Object.assign({}, initialState, {
+                processing: true,
+                abortController: new AbortController()
+            });
+
         case 'SUCCESS':
             const { status, data } = payload;
             return {
@@ -101,22 +105,17 @@ function reducer(action, payload) {
             return {
                 processing: false
             };
+
+        case 'RESET':
+            return {...initialState};
     
         default:
-            return {
-                processing: true,
-                result: null,
-                statusCode: '',
-                errors: {},
-                message: '',
-                notification: {type: '', message: ''},
-                abortController: new AbortController()
-            };
+            throw new Error();
     }
 }
 
-export function dispatch(action, payload, context, reactivity) {
-    const state = reducer(action, payload);
+export function dispatch({type, payload}, context, reactivity) {
+    const state = reducer(type, payload);
 
     setState(reactivity, context, state);
 }
