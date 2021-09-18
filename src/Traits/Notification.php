@@ -2,27 +2,58 @@
 
 namespace Aqua\Aquastrap\Traits;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Illuminate\Http\Response as HttpResponse;
+use \stdClass;
 
 trait Notification
 {
+    public ?stdClass $notify = null;
+
     /**
-     * send notification message along with response payload
-     * @param string $type 'info' | 'success' | 'warning' | 'danger'
-     * @param string $message the notification message
-     * @param array $payload response data to send
-     * @return Illuminate\Http\JsonResponse
+     * [method_name => $type]
      */
-    protected function withAquaNotification(string $type, string $message = '', array $payload = []) : JsonResponse {
-        return Response::json($payload)
+    protected static $NOTIFICATION_TYPE = [
+        'info'    => 'info',
+        'success' => 'success',
+        'warning' => 'warning',
+        'danger'  => 'danger',
+    ];
+
+    public function __call($name, $arguments)
+    {
+        if(array_key_exists($name, self::$NOTIFICATION_TYPE)) {
+            $this->setNotification(self::$NOTIFICATION_TYPE[$name], reset($arguments));
+
+            return $this->aquaNotification();
+        }
+    }
+
+    /**
+     * send notification message via header along with response payload
+     * @return Illuminate\Http\Response
+     */
+    protected function aquaNotification() : HttpResponse {
+        return (new HttpResponse())
+            ->setStatusCode(SymfonyResponse::HTTP_OK)
             ->withHeaders([
-                'X-Aqua-Notification' => json_encode(['type' => $type, 'message' => $message])
+                'X-Aqua-Notification' => json_encode(['type' => $this->notify->type, 'message' => $this->notify->message])
             ]);
     }
 
-    public function success(string $message, array $payload = []) : JsonResponse { return $this->withAquaNotification('success', $message, $payload); }
-    public function warning(string $message, array $payload = []) : JsonResponse { return $this->withAquaNotification('warning', $message, $payload); }
-    public function info(string $message, array $payload = []) :    JsonResponse { return $this->withAquaNotification('info', $message, $payload); }
-    public function danger(string $message, array $payload = []) :  JsonResponse { return $this->withAquaNotification('danger', $message, $payload); }
+    /**
+     * set notification message
+     * @param string $type 'info' | 'success' | 'warning' | 'danger'
+     * @param string $message the notification message
+     * @return self
+     */
+    protected function setNotification(string $type, ?string $message = '') : self {
+        $notification = new stdClass;
+        $notification->type = in_array($type, self::$NOTIFICATION_TYPE) ? $type : 'info';
+        $notification->message = $message;
+
+        $this->notify = $notification;
+
+        return $this;
+    }
 }
