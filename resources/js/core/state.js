@@ -1,4 +1,4 @@
-import { observable, observe } from '@nx-js/observer-util';
+import { observable } from '@nx-js/observer-util';
 import { _hasProperty, _findComponentById } from './../helper/util';
 
 export function reactivityManager({id, key}, method) {

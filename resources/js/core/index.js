@@ -53,7 +53,7 @@ window._aquaCore = {
                     ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]) &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]:    value[LIFECYCLE_CONFIG_NAME[XHREvent.SUCCESS]]} ),
                     ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.ERROR])   &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]:      value[LIFECYCLE_CONFIG_NAME[XHREvent.ERROR]]} ),
                     ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME[XHREvent.FINISH])  &&  {[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]:     value[[LIFECYCLE_CONFIG_NAME[XHREvent.FINISH]]]} ),
-                    ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME.notification)      &&  {[LIFECYCLE_CONFIG_NAME.notification]:        value[LIFECYCLE_CONFIG_NAME.notification]} ),
+                    ...( _hasProperty(value, LIFECYCLE_CONFIG_NAME.notification)      &&  {[LIFECYCLE_CONFIG_NAME.notification]:         value[LIFECYCLE_CONFIG_NAME.notification]} ),
                 };
 
                 break;
