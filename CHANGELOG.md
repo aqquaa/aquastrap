@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.9-alpha - 2021-09-24
+
+#### changed
+- notification api rewritten. now support method chaining
+
 ## v0.0.8-alpha - 2021-09-17
 
 #### added
