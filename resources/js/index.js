@@ -4,6 +4,7 @@ import { _replicatePublicMethods } from './network/network';
 import { Method, XHREvent } from './helper/types';
 import { LIFECYCLE_CONFIG_NAME } from './config';
 import { reactivityManager, initialState, setState, dispatch } from './core/state';
+import { observe as NXObserve } from '@nx-js/observer-util';
 
 window.Aquastrap = {
     onStart(callback) {
@@ -79,6 +80,9 @@ function createHook(reactivity, networkHandler) {
         cancel() {
             if(this.state.abortController)
             this.state.abortController.abort();
+        },
+        observe(act) {
+            NXObserve(() => act(this.reactiveState));
         },
         resetStates() {
             dispatch({type: 'RESET', payload: {}}, this, reactivity);
