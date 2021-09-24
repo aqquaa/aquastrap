@@ -47,6 +47,12 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
         .then(function(data) {
             const status = data.status;
 
+            if(status === 204) {
+                let response = {status, data: {}};
+                execLifecycleCallback(id, XHREvent.SUCCESS, response);
+                return response;
+            }
+
             return data.json()
             .then(r => {
                 let response = {status, data: r};
