@@ -36,6 +36,7 @@ trait Notification
     protected function aquaNotification() : HttpResponse {
         return (new HttpResponse())
             ->setStatusCode(SymfonyResponse::HTTP_OK)
+            ->setContent([])
             ->withHeaders([
                 'X-Aqua-Notification' => json_encode(['type' => $this->notify->type, 'message' => $this->notify->message])
             ]);
