@@ -2,11 +2,20 @@ import { _hasProperty } from '../helper/util';
 import { notify } from '../notify/index';
 import { execLifecycleCallback } from './lifecycleHook';
 
-export default function processResponseHeader(response, id, key) {
+export function processResponseHeader(response, id, key) {
     const component = { id, key };
     const process = handle(response, component);
 
     process.notification();
+}
+
+export function isJsonResponse(response) {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+        return true;
+    }
+
+    return false;
 }
 
 function handle(response, component) {

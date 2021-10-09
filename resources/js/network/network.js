@@ -1,7 +1,7 @@
 import { Method, XHREvent } from '../helper/types';
-import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl } from '../helper/util';
+import { _hasFiles, _objectToFormData, _mergeDataIntoQueryString, hrefToUrl, mimeTypeToExt } from '../helper/util';
 import { execLifecycleCallback } from './lifecycleHook';
-import processResponseHeader from './headerManager';
+import { processResponseHeader, isJsonResponse } from './headerManager';
 
 function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
     return async (data = {}, method = Method.POST, signal = null) => {
@@ -19,7 +19,7 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
 
         let options = {
             headers: {
-                Accept: 'application/json',
+                Accept: '*/*',
                 ...( ! (data instanceof FormData) && {"Content-Type": "application/json"} ),
                 "X-Requested-With": "XMLHttpRequest",
                 "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
@@ -44,13 +44,23 @@ function _manifestNetworkHandler(url, ingredient, classMethod, id, key) {
 
             return res;
         })
-        .then(function(data) {
+        .then(async function(data) {
             const status = data.status;
 
-            if(status === 204) {
+            if(status < 300) {
                 let response = {status, data: {}};
-                execLifecycleCallback(id, XHREvent.SUCCESS, response);
-                return response;
+                
+                if(status === 204) { 
+                    execLifecycleCallback(id, XHREvent.SUCCESS, response);
+                    return response; 
+                }
+                
+                if(! isJsonResponse(data)) {
+                    await handleBlobResponse(data);
+                    
+                    execLifecycleCallback(id, XHREvent.SUCCESS, response);
+                    return response;
+                }
             }
 
             return data.json()
@@ -87,4 +97,30 @@ export function _replicatePublicMethods(id, key, classIngredient, methodNames) {
     }
 
     return methods;
+}
+
+async function handleBlobResponse(response) {
+    const defaultMime = "application/octet-stream";
+    const contentType = response.headers.get("content-type") || defaultMime;
+    const contentDisposition = response.headers.get('content-disposition');
+
+    const sippliedFilename = contentDisposition ? contentDisposition.split('filename=')[1] : '';
+
+    const filename = sippliedFilename !== '""' 
+                    ? sippliedFilename 
+                    : 'download' + mimeTypeToExt(contentType.split(';')[0]);
+    
+    const blob = await response.blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+
+    return;
 }
