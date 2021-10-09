@@ -40,3 +40,18 @@ test('when using Notification trait the response contain proper status code & co
 
     expect($notification)->toBeInstanceOf(Response::class);
 });
+
+it('support success warning info and danger methods', function() {
+    foreach (['success', 'warning', 'info', 'danger'] as $type) {
+        $notification = (new TestClassUsingAquaNotificationTrait)
+                        ->{$type}($type. ' message');
+
+        $response = TestResponse::fromBaseResponse($notification);
+
+        $response->assertHeader('X-Aqua-Notification', json_encode(['type' => $type, 'message' => $type. ' message']));
+    }
+});
+
+it('doesnt support anything other than success warning info and danger', function() {
+    (new TestClassUsingAquaNotificationTrait)->bar('foo message');
+})->throws(BadMethodCallException::class, 'method not supported');
