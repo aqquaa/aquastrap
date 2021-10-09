@@ -27,6 +27,8 @@ trait Notification
 
             return $this->aquaNotification();
         }
+
+        throw new \BadMethodCallException('method not supported');
     }
 
     /**
