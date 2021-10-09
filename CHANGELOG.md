@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.10-alpha - 2021-10-09
+
+#### added
+- non json response considered as blob & auto download as file
+- pest testing for notification trait
+
 ## v0.0.9-alpha - 2021-09-24
 
 #### changed
