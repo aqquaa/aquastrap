@@ -111,8 +111,8 @@ class AquaRoute extends Controller
     }
 
     private function isAuthorized($instance) {
-        if(method_exists($instance, 'authorize')) {
-            $authorized = $instance->authorize();
+        if(method_exists($instance, 'allowed')) {
+            $authorized = $instance->allowed();
 
             if(is_bool($authorized)) {
                 abort_unless($authorized, 403, 'Unauthorized');
