@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.0-beta.1 - 2021-11-03
+
+## changed
+- class file `authorize` renammed to `allowed` to fix controller native `authorize` method conflict with aqua class file `authorize` method
+
 ## v0.0.10-alpha - 2021-10-09
 
 #### added
