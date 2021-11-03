@@ -112,7 +112,7 @@ export function _mergeDataIntoQueryString(
 }
 
 export function mimeTypeToExt(mime) {
-    const data = [
+    const lookup = [
         {ext: '.aac', mime: 'audio/aac'},
         {ext: '.abw', mime: 'application/x-abiword'},
         {ext: '.arc', mime: 'application/x-freearc'},
@@ -187,9 +187,9 @@ export function mimeTypeToExt(mime) {
         {ext: '.7z', mime: 'application/x-7z-compressed'}
     ];
 
-    const item = data.find(lookup => lookup.mime === mime);
+    const match = lookup.find(item => item.mime === mime);
 
-    if(item) { return item.ext; }
+    if(match) { return match.ext; }
 
     return '.txt';
 }
