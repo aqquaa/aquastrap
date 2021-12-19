@@ -19,8 +19,7 @@ class AquaRoute extends Controller
     protected $args;
     protected $method;
 
-    public function __construct()
-    {
+    protected function boot() {
         [$componentClass, $args, $method] = $this->Validate(request());
 
         $this->componentClass   = $componentClass;
@@ -31,6 +30,8 @@ class AquaRoute extends Controller
     }
 
     public function Process(Request $request) {
+        $this->boot();
+
         try {
             $instance = count($this->args) ?
                         AppContainer::makeWith($this->componentClass, $this->args) :
@@ -39,7 +40,7 @@ class AquaRoute extends Controller
         } catch (\Exception $th) {
             throw RequestException::failedToInstantiate($this->componentClass);
         }
-        
+
         $this->isAuthorized($instance);
 
         return $instance->{$this->method}($request);
@@ -79,7 +80,7 @@ class AquaRoute extends Controller
             403,
             'Aquastrap Request Restricted'
         );
-        
+
         $reflection = new ReflectionClass($componentClass);
 
         $constructor = $reflection->getConstructor();
@@ -93,7 +94,7 @@ class AquaRoute extends Controller
                 if(isset($constructorParams[$param->name]))
                 $args[$param->name] = unserialize($constructorParams[$param->name]);
             }
-        } 
+        }
 
         return [
             $componentClass, $args, $method
