@@ -3,15 +3,18 @@
 namespace Aqua\Aquastrap;
 
 use Aqua\Aquastrap\Util;
-use Opis\Closure\SerializableClosure;
-use Aqua\Aquastrap\Crypt\Crypt;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Aqua\Aquastrap\Crypt\Crypt;
+use Opis\Closure\SerializableClosure;
+use Aqua\Aquastrap\ExtractDependencies;
+use Illuminate\Support\Facades\Session;
+use Aqua\Aquastrap\Contracts\DependencyLookupStore;
+use Illuminate\Support\Facades\App;
 
 class GenerateRecipe {
     protected static string $className;
     protected $classInstance;
-    protected array $suppliedDependencies = [];
 
     protected static array $store = [];
 
@@ -32,27 +35,20 @@ class GenerateRecipe {
     }
 
     /**
-     * generate by providing the dependencies of the class
-     */
-    public function makeWithSuppliedDependencies(array $suppliedDependencies = []) : array {
-        $this->suppliedDependencies = $suppliedDependencies;
-
-        return $this->recipe();
-    }
-
-    /**
      * id -> identifier for the class (component / controller / any target class to be used for handling request)
      * key -> identifier for the component instance (useful for blade components where same component can be used multiple times in a page)
      * ingredient -> class dependencies required to instantiate
      * methods -> list of allowed methods of the class to handle request
      */
     private function recipe() : array {
-        $ingredient = (string) $this->getComponentIngredient();
+        $key            = bin2hex(random_bytes(10));
+        $ingredientTag  = $this->getComponentIngredientTag($key);
+        $this->storeComponentIngredient($key, $this->getComponentDependencies());
 
         return [
             'id'          => static::getMemoized('checksum', function() { return $this->getComponentChecksum(); }),
-            'key'         => bin2hex(random_bytes(10)),
-            'ingredient'  => static::getMemoized('ingredient.'. $ingredient, function() use ($ingredient) { return  Crypt::Encrypt($ingredient); }),
+            'key'         => $key,
+            'ingredient'  => static::getMemoized('ingredient.'. $key, function() use ($ingredientTag) { return Crypt::Encrypt($ingredientTag); }),
             'methods'     => static::getMemoized('allowed_methods', function() { return $this->getAllowedCallableMethods(); })
         ];
     }
@@ -75,50 +71,9 @@ class GenerateRecipe {
     private function getComponentDependencies() : array {
         $constructorArgs = [];
 
-        if($this->suppliedDependencies) {
-            $constructorArgs = $this->suppliedDependencies;
-        };
-
-        if($this->classInstance) {
-            $constructorArgs = $this->resolveDependencies($this->classInstance);
-        }
+        $constructorArgs = (new ExtractDependencies)->for($this->classInstance);
 
         return $this->serializeDeps($constructorArgs);
-    }
-
-    /**
-     * from class instance to constructor dependencies
-     * 
-     * @param object $instance
-     * @return array dependencies as assoiative array
-     */
-    private function resolveDependencies(object $instance) : array {
-        $constructorArgs = [];
-
-        $reflectionRef = new \ReflectionClass($instance);
-        $classConstructor = $reflectionRef->getConstructor();
-
-        if($classConstructor) {
-            $parameters = $classConstructor->getParameters();
-
-            foreach($parameters as $param)
-            {
-                $paramName = $param->getName();
-
-                if(property_exists($instance, $paramName)) {
-                    $reflectionProperty = $reflectionRef->getProperty($paramName);
-                    
-                    $constructorArgs[$paramName] = $reflectionProperty->isStatic() ? $reflectionRef->getStaticPropertyValue($paramName) : $instance->{$paramName};
-                    continue;
-                }
-
-                if($param->isDefaultValueAvailable()) {
-                    $constructorArgs[$paramName] = $param->getDefaultValue();
-                }
-            }
-        }
-
-        return $constructorArgs;
     }
 
     private function getComponentChecksum() : string {
@@ -130,18 +85,27 @@ class GenerateRecipe {
         return (string) str_replace('\\', '.', static::$className);
     }
 
-    /**
-     * the data to be passed with aqua xhr request header
-     */
-    private function getComponentIngredient() : string
+    private function getComponentIngredientTag(string $key) : string
     {
-        $payload = base64_encode(serialize([
+        $payload = base64_encode(serialize(
+            [
                 'class' => $this->getComponentClassName(),
-                'dependencies' => $this->getComponentDependencies()
+                'key' => $key
             ]
         ));
 
         return $payload;
+    }
+
+    private function storeComponentIngredient(string $key, array $payload) : void
+    {
+        if(empty($payload)) return;
+
+        $uniqueId = Session::getId();
+
+        $store = App::make(DependencyLookupStore::class);
+
+        $store->set("$uniqueId:$key", $payload);
     }
 
     private function getAllowedCallableMethods() : array

@@ -2,8 +2,6 @@
 
 namespace Aqua\Aquastrap;
 
-use Aqua\Aquastrap\GenerateRecipe;
-
 class AquaDirective
 {
     public static function networkHandler($drips) {
@@ -17,13 +15,6 @@ class AquaDirective
 
     public static function setComponentConfig($drips) {
         return "_registerAquaConfig('". $drips['id'] ."')";
-    }
-
-    public static function linkComponent($link) {
-        $class = is_array($link) ? $link[0] : $link;
-        $dependencies = is_array($link) && isset($link[1]) ? $link[1] : [];
-        
-        return (new GenerateRecipe($class))->makeWithSuppliedDependencies($dependencies);
     }
 
     public static function scripts() {

@@ -3,7 +3,9 @@
 namespace Aqua\Aquastrap;
 
 use Illuminate\Support\ServiceProvider;
+use Aqua\Aquastrap\DepsLookup\SessionStore;
 use Illuminate\Support\Facades\{ Blade, Route };
+use Aqua\Aquastrap\Contracts\DependencyLookupStore;
 
 class AquastrapServiceProvider extends ServiceProvider
 {
@@ -12,6 +14,8 @@ class AquastrapServiceProvider extends ServiceProvider
         $this->registerRoutes();
 
         $this->registerDirectives();
+
+        $this->app->scoped(DependencyLookupStore::class, SessionStore::class);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -40,12 +44,6 @@ class AquastrapServiceProvider extends ServiceProvider
         Blade::directive('aquaConfig', function () {
             return "<?php 
             echo \Aqua\Aquastrap\AquaDirective::setComponentConfig(\$_aquaDrips);
-            ?>";
-        });
-
-        Blade::directive('aquaLink', function ($link) {
-            return "<?php 
-            \$_aquaDrips = \Aqua\Aquastrap\AquaDirective::linkComponent($link);
             ?>";
         });
     }

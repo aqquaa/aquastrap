@@ -5,13 +5,16 @@ namespace Aqua\Aquastrap;
 use Exception;
 use ReflectionClass;
 use ReflectionMethod;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\App as AppContainer;
 use Aqua\Aquastrap\Util;
+use Illuminate\Http\Request;
 use Aqua\Aquastrap\Crypt\Crypt;
-use Aqua\Aquastrap\Exceptions\RequestException;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\App;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Session;
+use Aqua\Aquastrap\Exceptions\RequestException;
+use Aqua\Aquastrap\Contracts\DependencyLookupStore;
+use Illuminate\Support\Facades\App as AppContainer;
 
 class AquaRoute extends Controller
 {
@@ -53,8 +56,8 @@ class AquaRoute extends Controller
         $data = json_decode($header);
 
         try {
-            $decryptedClassIngredient = Crypt::Decrypt($data->ingredient);
-            $decoded = base64_decode($decryptedClassIngredient);
+            $decryptedClassIngredientTag = Crypt::Decrypt($data->ingredient);
+            $decoded = base64_decode($decryptedClassIngredientTag);
             $unserialized = unserialize($decoded);
 
         } catch (\Exception $e) {
@@ -62,14 +65,18 @@ class AquaRoute extends Controller
         }
 
         abort_unless(
-            is_array($unserialized) && array_key_exists('class', $unserialized) && array_key_exists('dependencies', $unserialized),
+            is_array($unserialized) && array_key_exists('class', $unserialized) && array_key_exists('key', $unserialized),
             403,
             'Aquastrap Detected Tampered Data'
         );
 
         $componentClass = str_replace('.', '\\', $unserialized['class']);
 
-        $constructorParams = (array) $unserialized['dependencies'];
+        $store = App::make(DependencyLookupStore::class);
+        $uniqueId = Session::getId();
+        $key = $unserialized['key'];
+        
+        $constructorParams = (array) $store->get("$uniqueId:$key");
         $method = $data->method;
 
         abort_unless(
