@@ -15,7 +15,7 @@ trait AquaSync
      */
     protected function aquaRecipes() : array {
         return [
-            '_aquaDrips' => (new GenerateRecipe((string) self::class))->make($this)
+            '_aquaDrips' => (new GenerateRecipe($this))->make()
         ];
     }
 }

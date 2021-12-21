@@ -4,16 +4,11 @@ namespace Aqua\Aquastrap;
 
 use Exception;
 use ReflectionClass;
-use ReflectionMethod;
 use Aqua\Aquastrap\Util;
 use Illuminate\Http\Request;
-use Aqua\Aquastrap\Crypt\Crypt;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\App;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Session;
 use Aqua\Aquastrap\Exceptions\RequestException;
-use Aqua\Aquastrap\Contracts\DependencyLookupStore;
 use Illuminate\Support\Facades\App as AppContainer;
 
 class AquaRoute extends Controller
@@ -54,30 +49,15 @@ class AquaRoute extends Controller
 
         $header = $request->header('X-Aquastrap');
         $data = json_decode($header);
-
-        try {
-            $decryptedClassIngredientTag = Crypt::Decrypt($data->ingredient);
-            $decoded = base64_decode($decryptedClassIngredientTag);
-            $unserialized = unserialize($decoded);
-
-        } catch (\Exception $e) {
-            abort(403, 'Aquastrap Detected Tampered Data');
-        }
-
-        abort_unless(
-            is_array($unserialized) && array_key_exists('class', $unserialized) && array_key_exists('key', $unserialized),
-            403,
-            'Aquastrap Detected Tampered Data'
-        );
-
-        $componentClass = str_replace('.', '\\', $unserialized['class']);
-
-        $store = App::make(DependencyLookupStore::class);
-        $uniqueId = Session::getId();
-        $key = $unserialized['key'];
-        
-        $constructorParams = (array) $store->get("$uniqueId:$key");
+        $storeKey = $data->ingredient;
         $method = $data->method;
+
+        $ingredient = IngredientManager::find($storeKey);
+
+        abort_unless($ingredient, 403, 'Aquastrap Detected Tampered Data');
+
+        $componentClass = $ingredient['class'];
+        $constructorParams = (array) $ingredient['dependencies'];
 
         abort_unless(
             class_exists($componentClass) &&
