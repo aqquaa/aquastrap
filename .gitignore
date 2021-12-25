@@ -7,9 +7,10 @@ build
 composer.lock
 coverage
 docs
-phpunit.xml
+phpstan.neon
 psalm.xml
 testbench.yaml
+.php-cs-fixer.cache
 vendor
 *.js.LICENSE.txt
 *.hot-update.js
