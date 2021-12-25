@@ -17,34 +17,24 @@ class GenerateRecipe
 
     /**
      * generate by providing an intance of the class
+     *
+     * @return array [
+     * 'id' => (string) identifier for the class (component / controller / any target class to be used for handling request),
+     * 'key' => (string) identifier for the component instance (useful for blade components where same component can be used multiple times in a page),
+     * 'ingredient' => (string) class dependencies stored with the uniqueue key to be used to instantiate the class when ajax rqst received,
+     * 'methods' => (array) list of allowed methods of the class to handle request
+     * ]
      */
     public function make(): array
     {
-        return $this->recipe();
-    }
-
-    /**
-     * id -> identifier for the class (component / controller / any target class to be used for handling request)
-     * key -> identifier for the component instance (useful for blade components where same component can be used multiple times in a page)
-     * ingredient -> class dependencies required to instantiate
-     * methods -> list of allowed methods of the class to handle request
-     */
-    private function recipe(): array
-    {
-        [$key, $ingredient] = (new IngredientManager())->generate($this->classInstance);
-        IngredientStore::set($key, $ingredient);
+        [$ingredientKey, $ingredient] = (new IngredientManager())->generate($this->classInstance);
+        IngredientStore::set($ingredientKey, $ingredient);
 
         return [
-            'id' => static::getMemoized('checksum', function () {
-                return $this->getComponentChecksum();
-            }),
+            'id' => Memo::getMemoized(static::$className, 'checksum', fn () => $this->getComponentChecksum()),
             'key' => bin2hex(random_bytes(10)),
-            'ingredient' => static::getMemoized('ingredient.'. $key, function () use ($key) {
-                return $key;
-            }),
-            'methods' => static::getMemoized('allowed_methods', function () {
-                return $this->getAllowedCallableMethods();
-            }),
+            'ingredient' => $ingredientKey,
+            'methods' => Memo::getMemoized(static::$className, 'allowed_methods', fn () => $this->getAllowedCallableMethods()),
         ];
     }
 
@@ -56,14 +46,5 @@ class GenerateRecipe
     private function getAllowedCallableMethods(): array
     {
         return Util::getPublicMethods((string) static::$className);
-    }
-
-    protected static function getMemoized($key, $setter = null)
-    {
-        if (! isset(static::$store[static::$className][$key]) && $setter instanceof \Closure) {
-            static::$store[static::$className][$key] = $setter();
-        }
-
-        return static::$store[static::$className][$key] ?: null;
     }
 }
