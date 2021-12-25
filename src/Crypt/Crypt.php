@@ -2,13 +2,15 @@
 
 namespace Aqua\Aquastrap\Crypt;
 
-use Aqua\Aquastrap\Exceptions\CryptException;
 use Aqua\Aquastrap\Contracts\Crypto;
+use Aqua\Aquastrap\Exceptions\CryptException;
 
-class Crypt {
+class Crypt
+{
     public static $config;
 
-    protected static function getCrypter() {
+    protected static function getCrypter()
+    {
         $config = config('aquastrap.encryption');
         $strategy = data_get($config, 'default');
         $crypterClass = data_get($config, 'strategy.' . $strategy . '.crypter');
@@ -16,14 +18,14 @@ class Crypt {
         $crypterReflection = new \ReflectionClass($crypterClass);
 
         throw_unless(
-            $crypterReflection->implementsInterface(Crypto::class), 
+            $crypterReflection->implementsInterface(Crypto::class),
             CryptException::shouldImplementContract($strategy, (string) Crypto::class)
         );
 
         return $crypterClass;
     }
 
-    public static function Encrypt(string $content) :string
+    public static function Encrypt(string $content): string
     {
         $crypter = self::getCrypter();
 
@@ -31,13 +33,12 @@ class Crypt {
             $encrypted = $crypter::Encrypt($content);
 
             return $encrypted;
-        }
-        catch ( \Exception $e ) {
+        } catch (\Exception $e) {
             throw CryptException::failedToEncrypt($crypter);
         }
     }
 
-    public static function Decrypt(string $content) 
+    public static function Decrypt(string $content)
     {
         $crypter = self::getCrypter();
 
@@ -45,8 +46,7 @@ class Crypt {
             $decrypted = $crypter::Decrypt($content);
 
             return $decrypted;
-        }
-        catch ( \Exception $e ) {
+        } catch (\Exception $e) {
             throw CryptException::failedToDecrypt($crypter);
         }
     }

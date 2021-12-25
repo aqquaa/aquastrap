@@ -2,15 +2,12 @@
 
 namespace Aqua\Aquastrap;
 
-use Exception;
-use ReflectionClass;
-use Aqua\Aquastrap\Util;
+use Aqua\Aquastrap\Exceptions\RequestException;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Aqua\Aquastrap\IngredientStore;
-use Illuminate\Auth\Access\Response;
-use Aqua\Aquastrap\Exceptions\RequestException;
 use Illuminate\Support\Facades\App as AppContainer;
+use ReflectionClass;
 
 class AquaRoute extends Controller
 {
@@ -18,24 +15,25 @@ class AquaRoute extends Controller
     protected $args;
     protected $method;
 
-    protected function boot() {
+    protected function boot()
+    {
         [$componentClass, $args, $method] = $this->Validate(request());
 
-        $this->componentClass   = $componentClass;
-        $this->args             = $args;
-        $this->method           = $method;
+        $this->componentClass = $componentClass;
+        $this->args = $args;
+        $this->method = $method;
 
         $this->applyMiddlewares();
     }
 
-    public function Process(Request $request) {
+    public function Process(Request $request)
+    {
         $this->boot();
 
         try {
             $instance = count($this->args) ?
                         AppContainer::makeWith($this->componentClass, $this->args) :
                         AppContainer::make($this->componentClass);
-
         } catch (\Exception $th) {
             throw RequestException::failedToInstantiate($this->componentClass);
         }
@@ -45,7 +43,8 @@ class AquaRoute extends Controller
         return $instance->{$this->method}($request);
     }
 
-    private function Validate(Request $request) : array {
+    private function Validate(Request $request): array
+    {
         abort_unless($request->hasHeader('X-Aquastrap'), 422, 'Missing Aquastrap Header');
 
         $header = $request->header('X-Aquastrap');
@@ -74,32 +73,37 @@ class AquaRoute extends Controller
         $constructor = $reflection->getConstructor();
 
         $args = [];
-        if($constructor) {
+        if ($constructor) {
             $parameters = $constructor->getParameters();
 
-            foreach($parameters as $param)
-            {
-                if(isset($constructorParams[$param->name]))
-                $args[$param->name] = unserialize($constructorParams[$param->name]);
+            foreach ($parameters as $param) {
+                if (isset($constructorParams[$param->name])) {
+                    $args[$param->name] = unserialize($constructorParams[$param->name]);
+                }
             }
         }
 
         return [
-            $componentClass, $args, $method
+            $componentClass, $args, $method,
         ];
     }
 
-    protected function findIngredient(string $key) : ?array {
-        if(! $ingredient = IngredientStore::get($key)) { return null; }
+    protected function findIngredient(string $key): ?array
+    {
+        if (! $ingredient = IngredientStore::get($key)) {
+            return null;
+        }
 
-        if(! isset($ingredient['class']) || ! array_key_exists('dependencies', $ingredient)) { return null; }
+        if (! isset($ingredient['class']) || ! array_key_exists('dependencies', $ingredient)) {
+            return null;
+        }
 
         return $ingredient;
     }
 
-    private function applyMiddlewares() : void
+    private function applyMiddlewares(): void
     {
-        if(property_exists($this->componentClass, 'middlewares')) {
+        if (property_exists($this->componentClass, 'middlewares')) {
             $middlewaresProp = (new ReflectionClass($this->componentClass))->getProperty('middlewares');
             $middlewaresProp->setAccessible(true);
 
@@ -107,12 +111,14 @@ class AquaRoute extends Controller
         }
     }
 
-    private function isAuthorized($instance) {
-        if(method_exists($instance, 'allowed')) {
+    private function isAuthorized($instance)
+    {
+        if (method_exists($instance, 'allowed')) {
             $authorized = $instance->allowed();
 
-            if(is_bool($authorized)) {
+            if (is_bool($authorized)) {
                 abort_unless($authorized, 403, 'Unauthorized');
+
                 return;
             }
 

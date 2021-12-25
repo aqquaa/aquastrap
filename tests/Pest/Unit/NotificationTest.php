@@ -1,15 +1,16 @@
 <?php
 
-use Illuminate\Testing\TestResponse;
 use Illuminate\Http\Response;
+use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-class TestClassUsingAquaNotificationTrait {
+class TestClassUsingAquaNotificationTrait
+{
     use Aqua\Aquastrap\Traits\Notification;
 }
 
-test('when using Notification trait the response contain proper header', function() {
-    $notification = (new TestClassUsingAquaNotificationTrait)
+test('when using Notification trait the response contain proper header', function () {
+    $notification = (new TestClassUsingAquaNotificationTrait())
     ->success('success message');
 
     $response = TestResponse::fromBaseResponse($notification);
@@ -21,12 +22,12 @@ test('when using Notification trait the response contain proper header', functio
     expect($notification)->toBeInstanceOf(Response::class);
 });
 
-test('when using Notification trait the response contain proper status code & content', function() {
-    $notification = (new TestClassUsingAquaNotificationTrait)
+test('when using Notification trait the response contain proper status code & content', function () {
+    $notification = (new TestClassUsingAquaNotificationTrait())
     ->warning('warning message')
     ->setStatusCode(SymfonyResponse::HTTP_CREATED)
     ->setContent([
-        'foo' => 'bar'
+        'foo' => 'bar',
     ]);
 
     $response = TestResponse::fromBaseResponse($notification);
@@ -41,9 +42,9 @@ test('when using Notification trait the response contain proper status code & co
     expect($notification)->toBeInstanceOf(Response::class);
 });
 
-it('support success warning info and danger methods', function() {
+it('support success warning info and danger methods', function () {
     foreach (['success', 'warning', 'info', 'danger'] as $type) {
-        $notification = (new TestClassUsingAquaNotificationTrait)
+        $notification = (new TestClassUsingAquaNotificationTrait())
                         ->{$type}($type. ' message');
 
         $response = TestResponse::fromBaseResponse($notification);
@@ -52,6 +53,6 @@ it('support success warning info and danger methods', function() {
     }
 });
 
-it('doesnt support anything other than success warning info and danger', function() {
-    (new TestClassUsingAquaNotificationTrait)->bar('foo message');
+it('doesnt support anything other than success warning info and danger', function () {
+    (new TestClassUsingAquaNotificationTrait())->bar('foo message');
 })->throws(BadMethodCallException::class, 'method not supported');

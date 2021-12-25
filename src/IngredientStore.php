@@ -2,13 +2,14 @@
 
 namespace Aqua\Aquastrap;
 
-use Illuminate\Support\Facades\Session;
 use Aqua\Aquastrap\Contracts\DependencyLookupStore;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 
-class IngredientStore {
-
-    public static function set(string $key, array $payload) : void {
+class IngredientStore
+{
+    public static function set(string $key, array $payload): void
+    {
         $store = App::make(DependencyLookupStore::class);
 
         $prefix = static::prefix();
@@ -16,7 +17,8 @@ class IngredientStore {
         $store->set("$prefix:$key", $payload);
     }
 
-    public static function get(string $key) :?array {
+    public static function get(string $key): ?array
+    {
         $store = App::make(DependencyLookupStore::class);
 
         $prefix = static::prefix();
@@ -24,7 +26,8 @@ class IngredientStore {
         return $store->get("$prefix:$key");
     }
 
-    protected static function prefix() : string {
+    protected static function prefix(): string
+    {
         return '_aqua' . Session::getId();
     }
 }

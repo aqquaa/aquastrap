@@ -8,5 +8,5 @@ expect()->extend('toBeOne', function () {
 
 function isLaravel(int $version)
 {
-    return (int) substr( app()->version(), 0, 1 ) === $version;
+    return (int) substr(app()->version(), 0, 1) === $version;
 }

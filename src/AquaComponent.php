@@ -8,11 +8,14 @@ class AquaComponent extends NativeViewComponent
 {
     public $_aquaDrips;
 
-    public function resolveView() {
+    public function resolveView()
+    {
         $this->_aquaDrips = $this->aquaRecipes()['_aquaDrips'];
 
         return parent::resolveView();
     }
 
-    public function render() { }
+    public function render()
+    {
+    }
 }

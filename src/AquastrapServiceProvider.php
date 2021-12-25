@@ -2,10 +2,11 @@
 
 namespace Aqua\Aquastrap;
 
-use Illuminate\Support\ServiceProvider;
-use Aqua\Aquastrap\DepsLookup\SessionStore;
-use Illuminate\Support\Facades\{ Blade, Route };
 use Aqua\Aquastrap\Contracts\DependencyLookupStore;
+use Aqua\Aquastrap\DepsLookup\SessionStore;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
 
 class AquastrapServiceProvider extends ServiceProvider
 {
@@ -28,7 +29,8 @@ class AquastrapServiceProvider extends ServiceProvider
         }
     }
 
-    protected function registerDirectives() {
+    protected function registerDirectives()
+    {
         Blade::directive('aqua', function () {
             return "<?php 
             echo \Aqua\Aquastrap\AquaDirective::networkHandler(\$_aquaDrips);

@@ -2,37 +2,38 @@
 
 namespace Aqua\Aquastrap;
 
-class ExtractDependencies {
+class ExtractDependencies
+{
     /**
      * from class instance extract constructor dependencies
-     * 
+     *
      * @param object $instance
      * @return array dependencies as assoiative array
      */
-    public function for(object $instance) : array
+    public function for(object $instance): array
     {
         $constructorArgs = [];
 
         $reflectionRef = new \ReflectionClass($instance);
         $classConstructor = $reflectionRef->getConstructor();
 
-        if($classConstructor) {
+        if ($classConstructor) {
             $parameters = $classConstructor->getParameters();
 
-            foreach($parameters as $param)
-            {
+            foreach ($parameters as $param) {
                 $paramName = $param->getName();
 
-                if(property_exists($instance, $paramName)) {
+                if (property_exists($instance, $paramName)) {
                     $reflectionProperty = $reflectionRef->getProperty($paramName);
-                    
-                    $constructorArgs[$paramName] = $reflectionProperty->isStatic() 
-                                                    ? $reflectionRef->getStaticPropertyValue($paramName) 
+
+                    $constructorArgs[$paramName] = $reflectionProperty->isStatic()
+                                                    ? $reflectionRef->getStaticPropertyValue($paramName)
                                                     : $instance->{$paramName};
+
                     continue;
                 }
 
-                if($param->isDefaultValueAvailable()) {
+                if ($param->isDefaultValueAvailable()) {
                     $constructorArgs[$paramName] = $param->getDefaultValue();
                 }
             }
