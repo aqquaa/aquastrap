@@ -1,8 +1,9 @@
 <?php
 
-use Aqua\Aquastrap\ExtractDependencies;
 use Aqua\Aquastrap\IngredientManager;
 use Opis\Closure\SerializableClosure;
+use Aqua\Aquastrap\ExtractDependencies;
+use Aqua\Aquastrap\Tests\Pest\ExampleClass;
 
 test('ingredient consists class and dependencies', function () {
     $instance = new ExampleClass('test');
@@ -86,14 +87,3 @@ it('serializes class dependency arg with Opis Closure if there is any closure ar
         ->argOne->toEqual($expectedArgsList['argOne']);
 });
 
-class ExampleClass
-{
-    public $argOne;
-    public $prop;
-
-    public function __construct($argOne, $prop = 'foo')
-    {
-        $this->argOne = $argOne;
-        $this->prop = $prop;
-    }
-}
