@@ -7,6 +7,7 @@ use ReflectionClass;
 use Aqua\Aquastrap\Util;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Aqua\Aquastrap\IngredientStore;
 use Illuminate\Auth\Access\Response;
 use Aqua\Aquastrap\Exceptions\RequestException;
 use Illuminate\Support\Facades\App as AppContainer;
@@ -52,7 +53,7 @@ class AquaRoute extends Controller
         $storeKey = $data->ingredient;
         $method = $data->method;
 
-        $ingredient = IngredientManager::find($storeKey);
+        $ingredient = $this->findIngredient($storeKey);
 
         abort_unless($ingredient, 403, 'Aquastrap Detected Tampered Data');
 
@@ -86,6 +87,14 @@ class AquaRoute extends Controller
         return [
             $componentClass, $args, $method
         ];
+    }
+
+    protected function findIngredient(string $key) : ?array {
+        if(! $ingredient = IngredientStore::get($key)) { return null; }
+
+        if(! isset($ingredient['class']) || ! array_key_exists('dependencies', $ingredient)) { return null; }
+
+        return $ingredient;
     }
 
     private function applyMiddlewares() : void

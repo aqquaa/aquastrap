@@ -21,17 +21,6 @@ class IngredientManager {
     }
 
     /**
-     * find ingredients by store key
-     */
-    public static function find(string $key) : ?array {
-        if(! $ingredient = IngredientStore::get($key)) { return null; }
-
-        if(! isset($ingredient['class']) || ! array_key_exists('dependencies', $ingredient)) { return null; }
-
-        return $ingredient;
-    }
-
-    /**
      * if instance passed then figure out class dependencies based on it
      * if passed the dependencies no need to resolve
      * 
