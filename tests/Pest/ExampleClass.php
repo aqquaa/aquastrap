@@ -13,8 +13,19 @@ class ExampleClass
         $this->prop = $prop;
     }
 
-    public function pubMet() {}
-    public function anotherPubMet() {}
-    protected function protMet() {}
-    private function privMet() {}
+    public function pubMet()
+    {
+    }
+
+    public function anotherPubMet()
+    {
+    }
+
+    protected function protMet()
+    {
+    }
+
+    private function privMet()
+    {
+    }
 }

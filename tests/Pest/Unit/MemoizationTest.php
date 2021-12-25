@@ -3,18 +3,20 @@
 use Aqua\Aquastrap\Memo;
 use Aqua\Aquastrap\Tests\Pest\ExampleClass;
 
-it('memoizes value for a given class name and key', function() {
+it('memoizes value for a given class name and key', function () {
     $instance = new ExampleClass('test');
 
     $execCounter = 0;
 
-    $calculate = function() use(&$execCounter) {
+    $calculate = function () use (&$execCounter) {
         $execCounter += 1;
+
         return 10;
     };
 
     $first = Memo::getMemoized(get_class($instance), 'key1', $calculate);
-    $second = Memo::getMemoized(get_class($instance), 'key1', $calculate);;
+    $second = Memo::getMemoized(get_class($instance), 'key1', $calculate);
+    ;
 
     expect($first)->toEqual(10)
         ->and($second)->toEqual(10)
@@ -25,8 +27,9 @@ it('memoizes value for a given class name and key', function() {
     expect($third)->toEqual(10)
         ->and($execCounter)->toEqual(2);
 
-    $anotherCalculator = function() use(&$execCounter) {
+    $anotherCalculator = function () use (&$execCounter) {
         $execCounter += 1;
+
         return 19;
     };
 
