@@ -45,6 +45,6 @@ class GenerateRecipe
 
     private function getAllowedCallableMethods(): array
     {
-        return Util::getPublicMethods((string) static::$className);
+        return AquaCallableMethods::for((string) static::$className);
     }
 }
