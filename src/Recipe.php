@@ -2,7 +2,7 @@
 
 namespace Aqua\Aquastrap;
 
-class GenerateRecipe
+class Recipe
 {
     protected static string $className;
     protected object $classInstance;
@@ -25,7 +25,7 @@ class GenerateRecipe
      * 'methods' => (array) list of allowed methods of the class to handle request
      * ]
      */
-    public function make(): array
+    public function generate(): array
     {
         [$ingredientKey, $ingredient] = (new IngredientManager())->generate($this->classInstance);
         IngredientStore::set($ingredientKey, $ingredient);

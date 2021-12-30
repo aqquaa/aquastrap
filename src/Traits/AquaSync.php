@@ -2,7 +2,7 @@
 
 namespace Aqua\Aquastrap\Traits;
 
-use Aqua\Aquastrap\GenerateRecipe;
+use Aqua\Aquastrap\Recipe;
 
 trait AquaSync
 {
@@ -15,7 +15,7 @@ trait AquaSync
     protected function aquaRecipes(): array
     {
         return [
-            '_aquaDrips' => (new GenerateRecipe($this))->make(),
+            '_aquaDrips' => (new Recipe($this))->generate(),
         ];
     }
 }
