@@ -1,0 +1,1 @@
+<p>{{ implode(',', $_aquaDrips['methods']) }}</p>
