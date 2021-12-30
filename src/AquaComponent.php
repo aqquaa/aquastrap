@@ -15,7 +15,5 @@ class AquaComponent extends NativeViewComponent
         return parent::resolveView();
     }
 
-    public function render()
-    {
-    }
+    public function render() {}
 }
