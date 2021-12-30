@@ -1,0 +1,1 @@
+<p>{{ $_aquaDrips['ingredient'] }}</p>

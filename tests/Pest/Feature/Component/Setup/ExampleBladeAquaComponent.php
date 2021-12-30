@@ -2,19 +2,17 @@
 
 namespace Aqua\Aquastrap\Tests\Pest\Feature\Component\Setup;
 
-use Illuminate\View\Component;
 use Aqua\Aquastrap\AquaComponent;
-use Aqua\Aquastrap\Traits\AquaSync;
 
 class ExampleBladeAquaComponent extends AquaComponent
 {
-    use AquaSync;
+    public $loadView;
+    public $userID;
 
-    public $loadView = '';
-
-    public function __construct($loadView) 
+    public function __construct($loadView, $userID = 1) 
     {
         $this->loadView = $loadView;
+        $this->userID = $userID;
     }
 
     public function render()
