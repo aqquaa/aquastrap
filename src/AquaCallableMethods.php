@@ -57,11 +57,11 @@ class AquaCallableMethods
 
     protected static function ifGuarded(string $className, string $name) : bool
     {
-        if (! property_exists($className, 'guarded')) {
+        if (! property_exists($className, 'aquaGuarded')) {
             return false;
         }
 
-        $guardedProp = (new ReflectionClass($className))->getProperty('guarded');
+        $guardedProp = (new ReflectionClass($className))->getProperty('aquaGuarded');
         $guardedProp->setAccessible(true);
 
         return in_array($name, $guardedProp->getValue());

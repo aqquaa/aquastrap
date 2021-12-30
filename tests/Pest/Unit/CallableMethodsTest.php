@@ -55,7 +55,7 @@ test('parent class public methods are restricted', function() {
 
 test('explicitly guarded methods are restricted', function() {
     class SampleTestClassWithGuardedMethods {
-        protected static $guarded = ['save'];
+        protected static $aquaGuarded = ['save'];
         public function get() { }
         public function save() { }
     }
