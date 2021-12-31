@@ -1,6 +1,4 @@
 {
-    "/js/index.js": "/js/index.js",
-    "/js/store.js": "/js/store.js",
-    "/test/test-aquastrap/public/vendor/aquastrap/js/index.js": "/test/test-aquastrap/public/vendor/aquastrap/js/index.js",
-    "/test/test-aquastrap/public/vendor/aquastrap/js/store.js": "/test/test-aquastrap/public/vendor/aquastrap/js/store.js"
+    "/js/index.js": "/js/index.js?id=6ae1363df980c5335c63",
+    "/js/store.js": "/js/store.js?id=1103598192f2afe992ab"
 }
