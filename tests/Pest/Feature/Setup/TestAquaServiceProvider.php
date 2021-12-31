@@ -1,6 +1,6 @@
 <?php
 
-namespace Aqua\Aquastrap\Tests\Pest\Feature\Component\Setup;
+namespace Aqua\Aquastrap\Tests\Pest\Feature\Setup;
 
 use Illuminate\Support\ServiceProvider;
 
