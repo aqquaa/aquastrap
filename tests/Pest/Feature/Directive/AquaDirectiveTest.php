@@ -56,6 +56,8 @@ test('the aquaConfig directive prints _registerAquaConfig javascript function to
 });
 
 test('the aquaScripts directive prints js assets with asset version', function() {
+    test()->withPublishedAssets();
+
     $content = blade('@aquaScripts');
 
     $manifestPath = __DIR__ .'/../../../../dist/mix-manifest.json';

@@ -20,13 +20,12 @@ class TestCase extends TestbenchTestCase
         ];
     }
 
-    protected function setUp(): void
+    public function withPublishedAssets(): void
     {
-        // Code before application created.
-
-        parent::setUp();
-
-        // Code after application created.
+        // flush any previous published assets
+        $process = new Process(['rm', '-rf', public_path('vendor')]);
+        $process->start();
+        $process->wait();
 
         // publish assets
         $process = new Process(['mkdir', public_path('vendor/aquastrap')]);
@@ -36,15 +35,5 @@ class TestCase extends TestbenchTestCase
         $process = new Process(['cp', '-a', __DIR__ .'/../dist/.', public_path('vendor/aquastrap')]);
         $process->start();
         $process->wait();
-    }
-
-    protected function tearDown(): void
-    {
-        // flush published assets
-        $process = new Process(['rm', '-rf', public_path('vendor')]);
-        $process->start();
-        $process->wait();
-        
-        parent::tearDown();
     }
 }
