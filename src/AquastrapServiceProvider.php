@@ -2,11 +2,11 @@
 
 namespace Aqua\Aquastrap;
 
+use Aqua\Aquastrap\Contracts\DependencyLookupStore;
+use Aqua\Aquastrap\DepsLookup\SessionStore;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Aqua\Aquastrap\DepsLookup\SessionStore;
-use Aqua\Aquastrap\Contracts\DependencyLookupStore;
 
 class AquastrapServiceProvider extends ServiceProvider
 {

@@ -11,5 +11,7 @@ class TestAquaServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/views', 'aquatest');
     }
 
-    public function register() { }
+    public function register()
+    {
+    }
 }

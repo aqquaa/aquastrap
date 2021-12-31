@@ -2,11 +2,11 @@
 
 namespace Aqua\Aquastrap\Tests;
 
-use Symfony\Component\Process\Process;
 use Aqua\Aquastrap\AquastrapServiceProvider;
-use Orchestra\Testbench\TestCase as TestbenchTestCase;
-use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Aqua\Aquastrap\Tests\Pest\Feature\Setup\TestAquaServiceProvider;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
+use Orchestra\Testbench\TestCase as TestbenchTestCase;
+use Symfony\Component\Process\Process;
 
 class TestCase extends TestbenchTestCase
 {

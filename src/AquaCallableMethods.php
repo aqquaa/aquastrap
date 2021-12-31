@@ -2,18 +2,18 @@
 
 namespace Aqua\Aquastrap;
 
+use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionMethod;
-use Illuminate\Support\Str;
 
 class AquaCallableMethods
 {
-    public static function for(string $className) : array
+    public static function for(string $className): array
     {
-        if($allowOnlyList = self::allowOnlyMethods($className)) {
+        if ($allowOnlyList = self::allowOnlyMethods($className)) {
             return $allowOnlyList;
         }
-        
+
         $reflection = new ReflectionClass($className);
 
         return collect($reflection->getMethods(ReflectionMethod::IS_PUBLIC))
@@ -38,13 +38,13 @@ class AquaCallableMethods
                in_array($name, $aquaMethods);
     }
 
-    protected static function ifParentPublicMethod(string $className, string $name) : bool
+    protected static function ifParentPublicMethod(string $className, string $name): bool
     {
         $reflection = new ReflectionClass($className);
 
         $parent_public_methods = collect(
             $reflection->getParentClass()
-            ? $reflection->getParentClass()->getMethods(ReflectionMethod::IS_PUBLIC) 
+            ? $reflection->getParentClass()->getMethods(ReflectionMethod::IS_PUBLIC)
             : []
         )
         ->map(function (ReflectionMethod $method) {
@@ -55,7 +55,7 @@ class AquaCallableMethods
         return in_array($name, $parent_public_methods);
     }
 
-    protected static function ifGuarded(string $className, string $name) : bool
+    protected static function ifGuarded(string $className, string $name): bool
     {
         if (! property_exists($className, 'aquaGuarded')) {
             return false;
@@ -67,7 +67,7 @@ class AquaCallableMethods
         return in_array($name, $guardedProp->getValue());
     }
 
-    protected static function allowOnlyMethods(string $className) : bool|array
+    protected static function allowOnlyMethods(string $className): bool|array
     {
         if (! property_exists($className, 'aquaCallable')) {
             return false;
