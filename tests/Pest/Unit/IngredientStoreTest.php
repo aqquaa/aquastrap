@@ -1,13 +1,13 @@
 <?php
 
+use Aqua\Aquastrap\Contracts\DependencyLookupStore;
+use Aqua\Aquastrap\DepsLookup\SessionStore;
 use Aqua\Aquastrap\IngredientStore;
 use Illuminate\Support\Facades\Session;
-use Aqua\Aquastrap\DepsLookup\SessionStore;
-use Aqua\Aquastrap\Contracts\DependencyLookupStore;
 
-beforeEach(fn() => app()->instance(DependencyLookupStore::class, new SessionStore));
+beforeEach(fn () => app()->instance(DependencyLookupStore::class, new SessionStore()));
 
-it('stores and fetches data', function() {
+it('stores and fetches data', function () {
     $key = md5('random');
     $value = ['green', 'blue'];
 
@@ -18,7 +18,7 @@ it('stores and fetches data', function() {
     expect($stored)->toMatchArray($value);
 });
 
-it('the key is prefixed with an unique id for the current user only', function() {
+it('the key is prefixed with an unique id for the current user only', function () {
     $key = md5('random');
     $value = ['green', 'blue'];
 
@@ -26,7 +26,7 @@ it('the key is prefixed with an unique id for the current user only', function()
 
     $prefix = '_aqua';
     $uniqueId = Session::getId();
-    
+
     $stored = session("$prefix$uniqueId.$key");
 
     expect($stored)->toMatchArray($value);
