@@ -21,11 +21,14 @@ class AquaDirective
 
     public static function scripts()
     {
-        $aquaroute = '<script>window._aquaroute = "'. route('aquastrap.request') .'";</script>';
+        $scripts = '<script>window._aquaroute = "'. route('aquastrap.request') .'";</script>' . PHP_EOL;
 
-        $store = asset('vendor/aquastrap/js/store.js');
-        $mainScript = asset('vendor/aquastrap/js/index.js');
+        $manifest = json_decode(file_get_contents(public_path('vendor/aquastrap/mix-manifest.json')), true);
 
-        return $aquaroute . '<script src="'.$store.'"></script>' . '<script src="'.$mainScript.'"></script>';
+        foreach ($manifest as $assetPath) {
+            $scripts .= '<script src="'.asset('vendor/aquastrap' . $assetPath).'"></script>' . PHP_EOL;
+        }
+
+        return $scripts;
     }
 }
