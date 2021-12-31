@@ -5,9 +5,5 @@ let mix = require('laravel-mix')
 mix
   .setPublicPath('dist')
   .js('resources/js/index.js', 'js')
-  .js('resources/js/store.js', 'js');
-
-mix.copy([
-    'dist/js/index.js',
-    'dist/js/store.js',
-], './../../test/test-aquastrap/public/vendor/aquastrap/js');
+  .js('resources/js/store.js', 'js')
+  .version();
