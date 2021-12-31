@@ -2,18 +2,17 @@
 
 namespace Aqua\Aquastrap;
 
-use Aqua\Aquastrap\Contracts\DependencyLookupStore;
-use Aqua\Aquastrap\DepsLookup\SessionStore;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Aqua\Aquastrap\DepsLookup\SessionStore;
+use Aqua\Aquastrap\Contracts\DependencyLookupStore;
 
 class AquastrapServiceProvider extends ServiceProvider
 {
     public function boot()
     {
         $this->registerRoutes();
-
         $this->registerDirectives();
 
         $this->app->scoped(DependencyLookupStore::class, SessionStore::class);
@@ -33,6 +32,13 @@ class AquastrapServiceProvider extends ServiceProvider
     {
         Blade::directive('aqua', function () {
             return "<?php 
+            if(! isset(\$_aquaDrips)) {
+                throw new \InvalidArgumentException('Aquastrap missing drips');
+            }
+            \$required_keys = ['id', 'key', 'ingredient', 'methods'];
+            if(! is_array(\$_aquaDrips) || ! !array_diff_key(array_flip(\$required_keys), \$_aquaDrips)) {
+                throw new \InvalidArgumentException('Aquastrap detected malformed drips');
+            }
             echo \Aqua\Aquastrap\AquaDirective::networkHandler(\$_aquaDrips);
             ?>";
         });
@@ -45,6 +51,12 @@ class AquastrapServiceProvider extends ServiceProvider
 
         Blade::directive('aquaConfig', function () {
             return "<?php 
+            if(! isset(\$_aquaDrips)) {
+                throw new \InvalidArgumentException('Aquastrap missing drips');
+            }
+            if(! is_array(\$_aquaDrips) || ! array_key_exists('id', \$_aquaDrips)) {
+                throw new \InvalidArgumentException('Aquastrap detected malformed drips');
+            }
             echo \Aqua\Aquastrap\AquaDirective::setComponentConfig(\$_aquaDrips);
             ?>";
         });
