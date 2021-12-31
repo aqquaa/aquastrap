@@ -48,7 +48,9 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/pest",
+        "pest": "vendor/bin/pest",
+        "test": "composer artisan view:clear && pest",
+        "artisan": "./vendor/bin/testbench",
         "format": "vendor/bin/php-cs-fixer fix --config=.php_cs.dist.php --allow-risky=yes"
     },
     "minimum-stability": "dev",
