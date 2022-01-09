@@ -150,7 +150,7 @@ test('if allowed only list exists then nothing other than those methods allowed'
     expect($allowed)->toHaveCount(1)->toContain('save');
 });
 
-test('if aquaCallable list left empty then it is ignored', function() {
+test('if aquaCallable list left empty then it is ignored', function () {
     class SampleTestClassWithAllowOnlyLeftBlank
     {
         protected static $aquaCallable = [];
@@ -177,7 +177,7 @@ test('if aquaCallable list left empty then it is ignored', function() {
     expect($allowed)->toHaveCount(2)->toMatchArray(['pocess', 'save']);
 });
 
-test('if aquaGuarded list left empty then it is ignored', function() {
+test('if aquaGuarded list left empty then it is ignored', function () {
     class SampleTestClassWithGuardedLeftBlank
     {
         protected static $aquaGuarded = [];

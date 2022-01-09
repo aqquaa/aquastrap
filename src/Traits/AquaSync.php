@@ -21,7 +21,8 @@ trait AquaSync
      *
      * @var bool
      */
-    public function allowed() : bool {
+    public function allowed(): bool
+    {
         return true;
     }
 
@@ -46,7 +47,7 @@ trait AquaSync
     protected function aquaRecipes(): array
     {
         return [
-            '_aquaDrips' => (new Recipe)($this),
+            '_aquaDrips' => (new Recipe())($this),
         ];
     }
 }
