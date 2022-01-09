@@ -30,7 +30,7 @@ class TestCase extends TestbenchTestCase
     protected function defineEnvironment($app)
     {
         $app['config']->set('view.paths', [
-            __DIR__.'/Pest/Feature/Setup/views',
+            __DIR__.'/Setup/views',
             resource_path('views'),
         ]);
     }
