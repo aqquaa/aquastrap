@@ -18,7 +18,7 @@ test('the method responsible for returning the view should pass aquaRecipes meth
 
         public function show()
         {
-            return view('aquatest::has-aqua-drips', ['foo' => 'bar'])->with($this->aquaRecipes());
+            return view('has-aqua-drips', ['foo' => 'bar'])->with($this->aquaRecipes());
         }
     }
 
@@ -27,7 +27,7 @@ test('the method responsible for returning the view should pass aquaRecipes meth
 
         public function show()
         {
-            return view('aquatest::has-aqua-drips', $this->aquaRecipes());
+            return view('has-aqua-drips', $this->aquaRecipes());
         }
     }
 

@@ -2,11 +2,12 @@
 
 namespace Aqua\Aquastrap\Tests;
 
+use Illuminate\Support\Facades\Blade;
 use Symfony\Component\Process\Process;
 use Aqua\Aquastrap\AquastrapServiceProvider;
 use Orchestra\Testbench\TestCase as TestbenchTestCase;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
-use Aqua\Aquastrap\Tests\Pest\Feature\Setup\TestAquaServiceProvider;
+use Aqua\Aquastrap\Tests\Pest\Feature\Component\Setup\ExampleBladeAquaComponent;
 
 class TestCase extends TestbenchTestCase
 {
@@ -16,8 +17,22 @@ class TestCase extends TestbenchTestCase
     {
         return [
             AquastrapServiceProvider::class,
-            TestAquaServiceProvider::class,
         ];
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Blade::component('example-blade-aqua-component', ExampleBladeAquaComponent::class);
+    }
+
+    protected function defineEnvironment($app)
+    {
+        $app['config']->set('view.paths', [
+            __DIR__.'/Pest/Feature/Setup/views',
+            resource_path('views'),
+        ]);
     }
 
     public function withPublishedAssets(): void

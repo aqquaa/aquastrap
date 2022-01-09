@@ -13,7 +13,7 @@ test('only public methods are allowed', function () {
 
         public function render()
         {
-            return view("aquatest::allowed-methods");
+            return view("allowed-methods");
         }
     }
 
@@ -33,7 +33,7 @@ test('guarded methods are restricted', function () {
 
         public function render()
         {
-            return view("aquatest::allowed-methods");
+            return view("allowed-methods");
         }
     }
 
@@ -54,7 +54,7 @@ test('when allowed only list exists then nothing other than those methods allowe
 
         public function render()
         {
-            return view("aquatest::allowed-methods");
+            return view("allowed-methods");
         }
     }
 

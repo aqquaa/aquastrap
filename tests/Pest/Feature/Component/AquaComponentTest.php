@@ -19,7 +19,7 @@ test('blade component extending Native IlluminateViewComponent using AquaSync wi
 
         public function render()
         {
-            return view("aquatest::has-aqua-drips");
+            return view("has-aqua-drips");
         }
     }
     
@@ -37,7 +37,7 @@ test('blade component extending Native ViewComponent using AquaSync will have _a
 
         public function render()
         {
-            return view("aquatest::has-aqua-drips")->with($this->aquaRecipes());
+            return view("has-aqua-drips")->with($this->aquaRecipes());
         }
     }
     
@@ -55,7 +55,7 @@ test('blade component using AquaSync will have _aquaDrips property passed into v
 
         public function render()
         {
-            return view("aquatest::has-aqua-drips", $this->aquaRecipes());
+            return view("has-aqua-drips", $this->aquaRecipes());
         }
     }
     
@@ -73,7 +73,7 @@ test('_aquaDrips contains all recipe keys', function () {
 
         public function render()
         {
-            return view("aquatest::has-drips-keys", $this->aquaRecipes());
+            return view("has-drips-keys", $this->aquaRecipes());
         }
     }
 

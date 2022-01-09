@@ -17,6 +17,6 @@ class ExampleBladeAquaComponent extends AquaComponent
 
     public function render()
     {
-        return view("aquatest::$this->loadView");
+        return view($this->loadView);
     }
 }
