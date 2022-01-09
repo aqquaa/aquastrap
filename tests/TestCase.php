@@ -2,12 +2,12 @@
 
 namespace Aqua\Aquastrap\Tests;
 
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Blade;
 use Aqua\Aquastrap\AquastrapServiceProvider;
-use Orchestra\Testbench\TestCase as TestbenchTestCase;
-use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Aqua\Aquastrap\Tests\Pest\Feature\Component\Setup\ExampleBladeAquaComponent;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\File;
+use Orchestra\Testbench\TestCase as TestbenchTestCase;
 
 class TestCase extends TestbenchTestCase
 {
