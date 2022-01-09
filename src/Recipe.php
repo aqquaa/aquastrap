@@ -4,17 +4,6 @@ namespace Aqua\Aquastrap;
 
 class Recipe
 {
-    protected static string $className;
-    protected object $classInstance;
-
-    protected static array $store = [];
-
-    public function __construct(object $classInstance)
-    {
-        $this->classInstance = $classInstance;
-        self::$className = get_class($classInstance);
-    }
-
     /**
      * generate by providing an intance of the class
      *
@@ -25,26 +14,28 @@ class Recipe
      * 'methods' => (array) list of allowed methods of the class to handle request
      * ]
      */
-    public function generate(): array
+    public function __invoke(object $classInstance): array
     {
-        [$ingredientKey, $ingredient] = (new IngredientManager())->generate($this->classInstance);
+        $className = get_class($classInstance);
+
+        [$ingredientKey, $ingredient] = (new IngredientManager())->generate($classInstance);
         IngredientStore::set($ingredientKey, $ingredient);
 
         return [
-            'id' => Memo::getMemoized(static::$className, 'checksum', fn () => $this->getComponentChecksum()),
+            'id' => Memo::getMemoized($className, 'checksum', fn () => $this->getComponentChecksum($className)),
             'key' => bin2hex(random_bytes(10)),
             'ingredient' => $ingredientKey,
-            'methods' => Memo::getMemoized(static::$className, 'allowed_methods', fn () => $this->getAllowedCallableMethods()),
+            'methods' => Memo::getMemoized($className, 'allowed_methods', fn () => $this->getAllowedCallableMethods($className)),
         ];
     }
 
-    private function getComponentChecksum(): string
+    private function getComponentChecksum(string $className): string
     {
-        return md5((string) static::$className);
+        return md5($className);
     }
 
-    private function getAllowedCallableMethods(): array
+    private function getAllowedCallableMethods(string $className): array
     {
-        return AquaCallableMethods::for((string) static::$className);
+        return AquaCallableMethods::for($className);
     }
 }
