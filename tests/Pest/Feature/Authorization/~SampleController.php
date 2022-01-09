@@ -1,12 +1,20 @@
 <?php
 
-class AquaController extends BaseController {
+class AquaController extends BaseController
+{
     use AquaSync;
 
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
-    protected function protectedMet() { }
-    private function privateMet() { }
+    protected function protectedMet()
+    {
+    }
+
+    private function privateMet()
+    {
+    }
 
     public function store()
     {

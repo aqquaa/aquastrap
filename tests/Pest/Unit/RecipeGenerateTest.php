@@ -1,20 +1,20 @@
 <?php
 
-use Aqua\Aquastrap\Recipe;
 use Aqua\Aquastrap\IngredientManager;
 use Aqua\Aquastrap\IngredientStore;
+use Aqua\Aquastrap\Recipe;
 use Aqua\Aquastrap\Tests\Pest\ExampleClass;
 
-it('generate recipe for an instance with proper keys', function() {
+it('generate recipe for an instance with proper keys', function () {
     $recipe = (new Recipe(new ExampleClass('test')))->generate();
-    
+
     expect($recipe)->toHaveKeys(['id', 'key', 'ingredient', 'methods']);
 });
 
 test('recipe consists id as component class checksum', function () {
     $instance = new ExampleClass('test');
     $recipe = (new Recipe($instance))->generate();
-    
+
     expect($recipe)->id->toEqual(md5(get_class($instance)));
 });
 

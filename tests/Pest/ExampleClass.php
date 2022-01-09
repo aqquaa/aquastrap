@@ -13,13 +13,32 @@ class ExampleClass
         $this->prop = $prop;
     }
 
-    public function pubMet() {}
-    public function anotherPubMet() {}
-    protected function protMet() {}
-    private function privMet() {}
+    public function pubMet()
+    {
+    }
+
+    public function anotherPubMet()
+    {
+    }
+
+    protected function protMet()
+    {
+    }
+
+    private function privMet()
+    {
+    }
 
     // aquastrap internal public methods
-    public function _aquaDrips() {}
-    public function success() {}
-    public function info() {}
+    public function _aquaDrips()
+    {
+    }
+
+    public function success()
+    {
+    }
+
+    public function info()
+    {
+    }
 }

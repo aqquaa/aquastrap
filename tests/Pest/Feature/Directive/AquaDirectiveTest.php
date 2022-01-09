@@ -21,11 +21,11 @@ test('the aqua directive wants the _aquaDrips be an array with needed keys', fun
 test('the aqua directive prints _aquaGenerate javascript function to the page with proper parameters', function() {
     $content = (string) view('aqua-directive', [
         '_aquaDrips' => [
-            'id' => 'shiv', 
-            'key' => 'shambhu', 
-            'ingredient' => 'shankar', 
-            'methods' => ['mahakal', 'nagendra']
-        ]
+            'id' => 'shiv',
+            'key' => 'shambhu',
+            'ingredient' => 'shankar',
+            'methods' => ['mahakal', 'nagendra'],
+        ],
     ])->render();
 
     expect($content)->toEqual("_aquaGenerate('shiv', 'shambhu', 'shankar', {'0':'mahakal','1':'nagendra'})");
@@ -45,11 +45,11 @@ test('the aquaConfig directive wants the _aquaDrips be an array having id as key
 test('the aquaConfig directive prints _registerAquaConfig javascript function to the page with proper parameters', function() {
     $content = (string) view('aqua-config-directive', [
         '_aquaDrips' => [
-            'id' => 'shiv', 
-            'key' => 'doesntmatter', 
-            'ingredient' => 'doesntmatter', 
-            'methods' => ['doesntmatter']
-        ]
+            'id' => 'shiv',
+            'key' => 'doesntmatter',
+            'ingredient' => 'doesntmatter',
+            'methods' => ['doesntmatter'],
+        ],
     ])->render();
 
     expect($content)->toEqual("_registerAquaConfig('shiv')");

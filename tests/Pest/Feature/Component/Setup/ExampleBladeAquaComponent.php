@@ -9,7 +9,7 @@ class ExampleBladeAquaComponent extends AquaComponent
     public $loadView;
     public $userID;
 
-    public function __construct($loadView, $userID = 1) 
+    public function __construct($loadView, $userID = 1)
     {
         $this->loadView = $loadView;
         $this->userID = $userID;

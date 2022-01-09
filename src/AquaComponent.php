@@ -8,7 +8,7 @@ use Illuminate\View\Component as NativeViewComponent;
 class AquaComponent extends NativeViewComponent
 {
     use AquaSync;
-    
+
     public $_aquaDrips;
 
     public function resolveView()
@@ -18,5 +18,7 @@ class AquaComponent extends NativeViewComponent
         return parent::resolveView();
     }
 
-    public function render() {}
+    public function render()
+    {
+    }
 }
