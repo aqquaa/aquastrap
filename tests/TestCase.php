@@ -2,8 +2,8 @@
 
 namespace Aqua\Aquastrap\Tests;
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Blade;
-use Symfony\Component\Process\Process;
 use Aqua\Aquastrap\AquastrapServiceProvider;
 use Orchestra\Testbench\TestCase as TestbenchTestCase;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
@@ -35,20 +35,14 @@ class TestCase extends TestbenchTestCase
         ]);
     }
 
-    public function withPublishedAssets(): void
+    public function withPublishedAssets(\Closure $callback)
     {
-        // flush any previous published assets
-        $process = new Process(['rm', '-rf', public_path('vendor')]);
-        $process->start();
-        $process->wait();
+        File::deleteDirectory(public_path('vendor'));
 
-        // publish assets
-        $process = new Process(['mkdir', public_path('vendor/aquastrap')]);
-        $process->start();
-        $process->wait();
+        File::makeDirectory(public_path('vendor/aquastrap'), 0755, true);
 
-        $process = new Process(['cp', '-a', __DIR__ .'/../dist/.', public_path('vendor/aquastrap')]);
-        $process->start();
-        $process->wait();
+        File::copyDirectory(__DIR__ .'/../dist/.', public_path('vendor/aquastrap'));
+
+        return $callback();
     }
 }

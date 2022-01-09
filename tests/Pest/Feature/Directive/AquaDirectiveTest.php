@@ -55,9 +55,8 @@ test('the aquaConfig directive prints _registerAquaConfig javascript function to
     expect($content)->toEqual("_registerAquaConfig('shiv')");
 });
 
-test('the aquaScripts directive prints js assets with asset version', function() {
-    test()->withPublishedAssets();
-
+test('the aquaScripts directive prints js assets with asset version')
+->withPublishedAssets(function() {
     $content = blade('@aquaScripts');
 
     $manifestPath = __DIR__ .'/../../../../dist/mix-manifest.json';
