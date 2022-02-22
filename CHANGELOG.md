@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.0-beta.2 - 2022-02-22
+
+## fixed
+- missing aquastrap header fix when running in console
+- no encryption using to find class ingredient ( using session as lookup store )
+
+#### added
+- added php 8.1 & Laravel 9 support
+
+#### changed
+- callable method visibily controll via - `aquaGuarded` `aquaCallable`
+
 ## v1.0.0-beta.1 - 2021-11-03
 
 ## changed
