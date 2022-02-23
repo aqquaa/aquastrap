@@ -2,9 +2,8 @@
 
 namespace Aqua\Aquastrap\Traits;
 
-use Illuminate\Http\Response as HttpResponse;
 use stdClass;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Aqua\Aquastrap\Notify;
 
 trait Notification
 {
@@ -25,24 +24,10 @@ trait Notification
         if (array_key_exists($name, self::$NOTIFICATION_TYPE)) {
             $this->setNotification(self::$NOTIFICATION_TYPE[$name], reset($arguments));
 
-            return $this->aquaNotification();
+            return (new Notify)($this->notify->message, $this->notify->type);
         }
 
         throw new \BadMethodCallException('method not supported');
-    }
-
-    /**
-     * send notification message via header along with response payload
-     * @return Illuminate\Http\Response
-     */
-    protected function aquaNotification(): HttpResponse
-    {
-        return (new HttpResponse())
-            ->setStatusCode(SymfonyResponse::HTTP_OK)
-            ->setContent([])
-            ->withHeaders([
-                'X-Aqua-Notification' => json_encode(['type' => $this->notify->type, 'message' => $this->notify->message]),
-            ]);
     }
 
     /**
