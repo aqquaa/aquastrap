@@ -2,13 +2,13 @@
 
 ## v2.0.0-beta.1 - 2022-02-23
 
-## fixed
+### fixed
 - trait property override error in php 8.1 fixed
 
-#### added
+### added
 - support rate limiting - methods: `$this->rateLimit(3)` `$this->clearRateLimiter()` check `src/Traits/RateLimit.php` for complete api
 
-#### removed
+### removed
 - middleware apply no longer supported
 
 ## v1.0.0-beta.2 - 2022-02-22
