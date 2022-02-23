@@ -2,12 +2,13 @@
 
 namespace Aqua\Aquastrap;
 
-use Aqua\Aquastrap\Exceptions\RequestException;
-use Illuminate\Auth\Access\Response;
+use ReflectionClass;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Auth\Access\Response;
+use Aqua\Aquastrap\Exceptions\RequestException;
 use Illuminate\Support\Facades\App as AppContainer;
-use ReflectionClass;
+use Aqua\Aquastrap\Exceptions\TooManyRequestsException;
 
 class AquaRoute extends Controller
 {
@@ -22,8 +23,6 @@ class AquaRoute extends Controller
         $this->componentClass = $componentClass;
         $this->args = $args;
         $this->method = $method;
-
-        $this->applyMiddlewares();
     }
 
     public function Process(Request $request)
@@ -40,7 +39,13 @@ class AquaRoute extends Controller
 
         $this->isAuthorized($instance);
 
-        return $instance->{$this->method}($request);
+        try {
+            $response = $instance->{$this->method}($request);
+        } catch (TooManyRequestsException $e) {
+            return $this->rateLimitedNotification($e->secondsUntilAvailable);
+        }
+
+        return $response;
     }
 
     private function Validate(Request $request): array
@@ -101,16 +106,6 @@ class AquaRoute extends Controller
         return $ingredient;
     }
 
-    private function applyMiddlewares(): void
-    {
-        if (property_exists($this->componentClass, 'middlewares')) {
-            $middlewaresProp = (new ReflectionClass($this->componentClass))->getProperty('middlewares');
-            $middlewaresProp->setAccessible(true);
-
-            $this->middleware($middlewaresProp->getValue());
-        }
-    }
-
     private function isAuthorized($instance)
     {
         if (method_exists($instance, 'allowed')) {
@@ -128,5 +123,15 @@ class AquaRoute extends Controller
                 $authorized->message() ?? 'Unauthorized'
             );
         }
+    }
+
+    protected function rateLimitedNotification($seconds) {
+        return (new Notify)(
+            '<strong class="font-weight-bold">Too many requests!</strong>  You may try again in '.$seconds.' seconds',
+            'warning'
+        )->setStatusCode(429)
+        ->setContent([
+            'message' => 'Too many requests !',
+        ]);
     }
 }

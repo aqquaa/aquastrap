@@ -3,25 +3,18 @@
 namespace Aqua\Aquastrap\Traits;
 
 use Aqua\Aquastrap\Recipe;
+use Illuminate\Auth\Access\Response;
+use Aqua\Aquastrap\Traits\RateLimit;
 
 trait AquaSync
 {
-    use Notification;
-
-    /**
-     * The middlewares to apply when any of the allowed method of this class gets called.
-     *
-     * @var array
-     */
-    protected static $middlewares = [];
+    use Notification, RateLimit;
 
     /**
      * Whether the request is allowed,
      * useful in authorization
-     *
-     * @var bool
      */
-    public function allowed(): bool
+    public function allowed(): bool|Response
     {
         return true;
     }
@@ -31,14 +24,14 @@ trait AquaSync
      *
      * @var array
      */
-    protected static $aquaGuarded = [];
+    // protected static $aquaGuarded = [];
 
     /**
      * Only the methods to allow being called.
      *
      * @var array
      */
-    protected static $aquaCallable = [];
+    // protected static $aquaCallable = [];
 
     /**
      * I need $_aquaDrips to be available in the view
