@@ -2,8 +2,8 @@
 
 namespace Aqua\Aquastrap\Traits;
 
-use stdClass;
 use Aqua\Aquastrap\Notify;
+use stdClass;
 
 trait Notification
 {
@@ -24,7 +24,7 @@ trait Notification
         if (array_key_exists($name, self::$NOTIFICATION_TYPE)) {
             $this->setNotification(self::$NOTIFICATION_TYPE[$name], reset($arguments));
 
-            return (new Notify)($this->notify->message, $this->notify->type);
+            return (new Notify())($this->notify->message, $this->notify->type);
         }
 
         throw new \BadMethodCallException('method not supported');
