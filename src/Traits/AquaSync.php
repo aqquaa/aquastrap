@@ -4,11 +4,11 @@ namespace Aqua\Aquastrap\Traits;
 
 use Aqua\Aquastrap\Recipe;
 use Illuminate\Auth\Access\Response;
-use Aqua\Aquastrap\Traits\RateLimit;
 
 trait AquaSync
 {
-    use Notification, RateLimit;
+    use Notification;
+    use RateLimit;
 
     /**
      * Whether the request is allowed,

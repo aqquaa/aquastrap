@@ -2,21 +2,25 @@
 
 namespace Aqua\Aquastrap\Traits;
 
-use Illuminate\Support\Facades\RateLimiter;
 use Aqua\Aquastrap\Exceptions\TooManyRequestsException;
+use Illuminate\Support\Facades\RateLimiter;
 
 trait RateLimit
 {
     protected function getRateLimitKey($method)
     {
-        if (! $method) $method = debug_backtrace()[1]['function'];
+        if (! $method) {
+            $method = debug_backtrace()[1]['function'];
+        }
 
         return static::class.'|'.$method.'|'.request()->ip();
     }
 
     protected function clearRateLimiter($method = null)
     {
-        if (! $method) $method = debug_backtrace()[1]['function'];
+        if (! $method) {
+            $method = debug_backtrace()[1]['function'];
+        }
 
         $key = $this->getRateLimitKey($method);
 
@@ -25,7 +29,9 @@ trait RateLimit
 
     protected function hitRateLimiter($method = null, $decaySeconds = 60)
     {
-        if (! $method) $method = debug_backtrace()[1]['function'];
+        if (! $method) {
+            $method = debug_backtrace()[1]['function'];
+        }
 
         $key = $this->getRateLimitKey($method);
 

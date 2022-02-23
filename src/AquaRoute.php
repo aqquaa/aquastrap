@@ -2,13 +2,13 @@
 
 namespace Aqua\Aquastrap;
 
-use ReflectionClass;
+use Aqua\Aquastrap\Exceptions\RequestException;
+use Aqua\Aquastrap\Exceptions\TooManyRequestsException;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Auth\Access\Response;
-use Aqua\Aquastrap\Exceptions\RequestException;
 use Illuminate\Support\Facades\App as AppContainer;
-use Aqua\Aquastrap\Exceptions\TooManyRequestsException;
+use ReflectionClass;
 
 class AquaRoute extends Controller
 {
@@ -125,8 +125,9 @@ class AquaRoute extends Controller
         }
     }
 
-    protected function rateLimitedNotification($seconds) {
-        return (new Notify)(
+    protected function rateLimitedNotification($seconds)
+    {
+        return (new Notify())(
             '<strong class="font-weight-bold">Too many requests!</strong>  You may try again in '.$seconds.' seconds',
             'warning'
         )->setStatusCode(429)
