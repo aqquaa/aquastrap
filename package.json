@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@nx-js/observer-util": "^4.2.2",
+        "axios": "^0.26.0",
         "deepmerge": "^4.2.2",
         "lodash": "^4.17.21",
         "qs": "^6.10.1"
