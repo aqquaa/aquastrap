@@ -1,11 +1,12 @@
 import { _hasProperty } from "../js/helper/util";
+import { HOOK } from './Fixed'
 
 export default class State {
     constructor() {
-        this.state = {...this.initialState()}
+        this.state = {...this._initialState()}
     }
 
-    initialState() {
+    _initialState() {
         return {
             busy: false,
             result: null,
@@ -18,28 +19,26 @@ export default class State {
     }
 
     reset() {
-        this.state = {...this.initialState()}
+        this.state = {...this._initialState()}
     }
 
     get hasValidationError() {
         return ! this.state.busy && Object.keys(this.state.errors).length > 0
     }
 
-    onBefore() {
+    [HOOK.BEFORE]() {
         
     }
 
-    onStart() {
+    [HOOK.START]() {
         this.state.busy = true
-
-        console.log(this.state);
     }
 
-    onCancel() {
+    [HOOK.CANCEL]() {
         
     }
 
-    onUpload(progress) {
+    [HOOK.UPLOAD](progress) {
         if(!_hasProperty(progress, 'total') || !_hasProperty(progress, 'loaded')) return
 
         let percentage = Math.round((progress.loaded / progress.total) * 100);
@@ -47,7 +46,7 @@ export default class State {
         console.log(percentage);
     }
 
-    onDownload(progress) {
+    [HOOK.DOWNLOAD](progress) {
         if(!_hasProperty(progress, 'total') || !_hasProperty(progress, 'loaded')) return
 
         let percentage = Math.round((progress.loaded / progress.total) * 100);
@@ -55,15 +54,15 @@ export default class State {
         console.log(percentage);
     }
 
-    onSuccess() {
+    [HOOK.SUCCESS]() {
         
     }
 
-    onError() {
+    [HOOK.ERROR]() {
         
     }
 
-    onFinish() {
+    [HOOK.FINISH]() {
         
     }
 }

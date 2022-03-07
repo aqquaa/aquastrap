@@ -2335,11 +2335,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ EventHub)
 /* harmony export */ });
 /* harmony import */ var _Fixed__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Fixed */ "./resources/js-new/Fixed.js");
+/* harmony import */ var _Hook__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Hook */ "./resources/js-new/Hook.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -2349,22 +2351,21 @@ var EventHub = /*#__PURE__*/function () {
   function EventHub(stateHub, mainContext) {
     _classCallCheck(this, EventHub);
 
-    this.stateHub = stateHub;
-    this.mainContext = mainContext;
+    this.hook = new _Hook__WEBPACK_IMPORTED_MODULE_1__.default(stateHub, mainContext);
     this.handlers = {};
   }
 
   _createClass(EventHub, [{
     key: "registerInternalHooks",
     value: function registerInternalHooks() {
-      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.BEFORE, this.stateHub.onBefore.bind(this.mainContext));
-      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.START, this.stateHub.onStart.bind(this.mainContext));
-      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.CANCEL, this.stateHub.onCancel.bind(this.mainContext));
-      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.UPLOAD, this.stateHub.onUpload.bind(this.mainContext));
-      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.DOWNLOAD, this.stateHub.onDownload.bind(this.mainContext));
-      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.SUCCESS, this.stateHub.onSuccess.bind(this.mainContext));
-      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.ERROR, this.stateHub.onError.bind(this.mainContext));
-      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.FINISH, this.stateHub.onFinish.bind(this.mainContext));
+      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.BEFORE, this.hook[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.BEFORE].bind(this.hook));
+      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.START, this.hook[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.START].bind(this.hook));
+      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.CANCEL, this.hook[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.CANCEL].bind(this.hook));
+      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.UPLOAD, this.hook[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.UPLOAD].bind(this.hook));
+      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.DOWNLOAD, this.hook[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.DOWNLOAD].bind(this.hook));
+      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.SUCCESS, this.hook[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.SUCCESS].bind(this.hook));
+      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.ERROR, this.hook[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.ERROR].bind(this.hook));
+      this.register(_Fixed__WEBPACK_IMPORTED_MODULE_0__.LIFE.FINISH, this.hook[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.FINISH].bind(this.hook));
     }
   }, {
     key: "registerUserHooks",
@@ -2452,7 +2453,9 @@ var EventHub = /*#__PURE__*/function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Method": () => (/* binding */ Method),
-/* harmony export */   "LIFE": () => (/* binding */ LIFE)
+/* harmony export */   "LIFE": () => (/* binding */ LIFE),
+/* harmony export */   "HOOK": () => (/* binding */ HOOK),
+/* harmony export */   "PUBLIC_EVENTS": () => (/* binding */ PUBLIC_EVENTS)
 /* harmony export */ });
 var Method = Object.freeze({
   GET: 'get',
@@ -2471,6 +2474,113 @@ var LIFE = Object.freeze({
   ERROR: 'error',
   FINISH: 'finish'
 });
+var HOOK = Object.freeze({
+  BEFORE: 'onBefore',
+  START: 'onStart',
+  DOWNLOAD: 'onDownload',
+  UPLOAD: 'onUpload',
+  CANCEL: 'onCancel',
+  SUCCESS: 'onSuccess',
+  ERROR: 'onError',
+  FINISH: 'onFinish'
+});
+var PUBLIC_EVENTS = Object.freeze({
+  BEFORE: 'aquastrap:onBefore',
+  START: 'aquastrap:onStart',
+  DOWNLOAD: 'aquastrap:onDownload',
+  UPLOAD: 'aquastrap:onUpload',
+  CANCEL: 'aquastrap:onCancel',
+  SUCCESS: 'aquastrap:onSuccess',
+  ERROR: 'aquastrap:onError',
+  FINISH: 'aquastrap:onFinish'
+});
+
+/***/ }),
+
+/***/ "./resources/js-new/Hook.js":
+/*!**********************************!*\
+  !*** ./resources/js-new/Hook.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Hook)
+/* harmony export */ });
+/* harmony import */ var _Fixed__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Fixed */ "./resources/js-new/Fixed.js");
+/* harmony import */ var _js_helper_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../js/helper/util */ "./resources/js/helper/util.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+var Hook = /*#__PURE__*/function () {
+  function Hook(stateHub, mainContext) {
+    _classCallCheck(this, Hook);
+
+    this.stateHub = stateHub;
+    this.mainContext = mainContext;
+  }
+
+  _createClass(Hook, [{
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.BEFORE,
+    value: function value(options) {
+      (0,_js_helper_util__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_Fixed__WEBPACK_IMPORTED_MODULE_0__.PUBLIC_EVENTS.BEFORE, options);
+      this.stateHub[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.BEFORE].apply(this.mainContext);
+    }
+  }, {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.START,
+    value: function value(options) {
+      (0,_js_helper_util__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_Fixed__WEBPACK_IMPORTED_MODULE_0__.PUBLIC_EVENTS.START, options);
+      this.stateHub[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.START].apply(this.mainContext, options);
+    }
+  }, {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.CANCEL,
+    value: function value(options) {
+      (0,_js_helper_util__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_Fixed__WEBPACK_IMPORTED_MODULE_0__.PUBLIC_EVENTS.CANCEL, options);
+      this.stateHub[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.CANCEL].apply(this.mainContext);
+    }
+  }, {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.UPLOAD,
+    value: function value(progress) {
+      (0,_js_helper_util__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_Fixed__WEBPACK_IMPORTED_MODULE_0__.PUBLIC_EVENTS.UPLOAD, progress);
+      this.stateHub[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.UPLOAD].apply(this.mainContext);
+    }
+  }, {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.DOWNLOAD,
+    value: function value(progress) {
+      (0,_js_helper_util__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_Fixed__WEBPACK_IMPORTED_MODULE_0__.PUBLIC_EVENTS.DOWNLOAD, progress);
+      this.stateHub[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.DOWNLOAD].apply(this.mainContext);
+    }
+  }, {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.SUCCESS,
+    value: function value(options) {
+      (0,_js_helper_util__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_Fixed__WEBPACK_IMPORTED_MODULE_0__.PUBLIC_EVENTS.SUCCESS, options);
+      this.stateHub[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.SUCCESS].apply(this.mainContext);
+    }
+  }, {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.ERROR,
+    value: function value(options) {
+      (0,_js_helper_util__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_Fixed__WEBPACK_IMPORTED_MODULE_0__.PUBLIC_EVENTS.ERROR, options);
+      this.stateHub[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.ERROR].apply(this.mainContext);
+    }
+  }, {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.FINISH,
+    value: function value() {
+      (0,_js_helper_util__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_Fixed__WEBPACK_IMPORTED_MODULE_0__.PUBLIC_EVENTS.FINISH, {});
+      this.stateHub[_Fixed__WEBPACK_IMPORTED_MODULE_0__.HOOK.FINISH].apply(this.mainContext);
+    }
+  }]);
+
+  return Hook;
+}();
+
+
 
 /***/ }),
 
@@ -2631,6 +2741,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ State)
 /* harmony export */ });
 /* harmony import */ var _js_helper_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../js/helper/util */ "./resources/js/helper/util.js");
+/* harmony import */ var _Fixed__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Fixed */ "./resources/js-new/Fixed.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -2645,16 +2756,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var State = /*#__PURE__*/function () {
   function State() {
     _classCallCheck(this, State);
 
-    this.state = _objectSpread({}, this.initialState());
+    this.state = _objectSpread({}, this._initialState());
   }
 
   _createClass(State, [{
-    key: "initialState",
-    value: function initialState() {
+    key: "_initialState",
+    value: function _initialState() {
       return {
         busy: false,
         result: null,
@@ -2668,7 +2780,7 @@ var State = /*#__PURE__*/function () {
   }, {
     key: "reset",
     value: function reset() {
-      this.state = _objectSpread({}, this.initialState());
+      this.state = _objectSpread({}, this._initialState());
     }
   }, {
     key: "hasValidationError",
@@ -2676,40 +2788,39 @@ var State = /*#__PURE__*/function () {
       return !this.state.busy && Object.keys(this.state.errors).length > 0;
     }
   }, {
-    key: "onBefore",
-    value: function onBefore() {}
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_1__.HOOK.BEFORE,
+    value: function value() {}
   }, {
-    key: "onStart",
-    value: function onStart() {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_1__.HOOK.START,
+    value: function value() {
       this.state.busy = true;
-      console.log(this.state);
     }
   }, {
-    key: "onCancel",
-    value: function onCancel() {}
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_1__.HOOK.CANCEL,
+    value: function value() {}
   }, {
-    key: "onUpload",
-    value: function onUpload(progress) {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_1__.HOOK.UPLOAD,
+    value: function value(progress) {
       if (!(0,_js_helper_util__WEBPACK_IMPORTED_MODULE_0__._hasProperty)(progress, 'total') || !(0,_js_helper_util__WEBPACK_IMPORTED_MODULE_0__._hasProperty)(progress, 'loaded')) return;
       var percentage = Math.round(progress.loaded / progress.total * 100);
       console.log(percentage);
     }
   }, {
-    key: "onDownload",
-    value: function onDownload(progress) {
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_1__.HOOK.DOWNLOAD,
+    value: function value(progress) {
       if (!(0,_js_helper_util__WEBPACK_IMPORTED_MODULE_0__._hasProperty)(progress, 'total') || !(0,_js_helper_util__WEBPACK_IMPORTED_MODULE_0__._hasProperty)(progress, 'loaded')) return;
       var percentage = Math.round(progress.loaded / progress.total * 100);
       console.log(percentage);
     }
   }, {
-    key: "onSuccess",
-    value: function onSuccess() {}
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_1__.HOOK.SUCCESS,
+    value: function value() {}
   }, {
-    key: "onError",
-    value: function onError() {}
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_1__.HOOK.ERROR,
+    value: function value() {}
   }, {
-    key: "onFinish",
-    value: function onFinish() {}
+    key: _Fixed__WEBPACK_IMPORTED_MODULE_1__.HOOK.FINISH,
+    value: function value() {}
   }]);
 
   return State;
@@ -2762,7 +2873,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "_objectToFormData": () => (/* binding */ _objectToFormData),
 /* harmony export */   "hrefToUrl": () => (/* binding */ hrefToUrl),
 /* harmony export */   "_mergeDataIntoQueryString": () => (/* binding */ _mergeDataIntoQueryString),
-/* harmony export */   "mimeTypeToExt": () => (/* binding */ mimeTypeToExt)
+/* harmony export */   "mimeTypeToExt": () => (/* binding */ mimeTypeToExt),
+/* harmony export */   "dispatch": () => (/* binding */ dispatch)
 /* harmony export */ });
 /* harmony import */ var _helper_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../helper/types */ "./resources/js/helper/types.js");
 /* harmony import */ var qs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! qs */ "./node_modules/qs/lib/index.js");
@@ -3093,6 +3205,15 @@ function mimeTypeToExt(mime) {
   }
 
   return '.txt';
+}
+function dispatch(name) {
+  var detail = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  document.dispatchEvent(new CustomEvent(name, {
+    detail: detail,
+    bubbles: true,
+    composed: true,
+    cancelable: true
+  }));
 }
 
 /***/ }),

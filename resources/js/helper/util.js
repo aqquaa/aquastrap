@@ -193,3 +193,14 @@ export function mimeTypeToExt(mime) {
 
     return '.txt';
 }
+
+export function dispatch(name, detail = {}) {
+    document.dispatchEvent(
+        new CustomEvent(name, {
+            detail,
+            bubbles: true,
+            composed: true,
+            cancelable: true,
+        })
+    )
+}

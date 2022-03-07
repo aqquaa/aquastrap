@@ -1,23 +1,23 @@
-import { LIFE } from "./Fixed";
+import { LIFE, HOOK } from "./Fixed";
+import Hook from './Hook'
 
 const nothing = () => {};
 
 export default class EventHub {
     constructor(stateHub, mainContext) {
-        this.stateHub = stateHub
-        this.mainContext = mainContext
+        this.hook = new Hook(stateHub, mainContext)
         this.handlers = {}
     }
 
     registerInternalHooks() {
-        this.register(LIFE.BEFORE, this.stateHub.onBefore.bind(this.mainContext))
-        this.register(LIFE.START, this.stateHub.onStart.bind(this.mainContext))
-        this.register(LIFE.CANCEL, this.stateHub.onCancel.bind(this.mainContext))
-        this.register(LIFE.UPLOAD, this.stateHub.onUpload.bind(this.mainContext))
-        this.register(LIFE.DOWNLOAD, this.stateHub.onDownload.bind(this.mainContext))
-        this.register(LIFE.SUCCESS, this.stateHub.onSuccess.bind(this.mainContext))
-        this.register(LIFE.ERROR, this.stateHub.onError.bind(this.mainContext))
-        this.register(LIFE.FINISH, this.stateHub.onFinish.bind(this.mainContext))
+        this.register(LIFE.BEFORE, this.hook[HOOK.BEFORE].bind(this.hook))
+        this.register(LIFE.START, this.hook[HOOK.START].bind(this.hook))
+        this.register(LIFE.CANCEL, this.hook[HOOK.CANCEL].bind(this.hook))
+        this.register(LIFE.UPLOAD, this.hook[HOOK.UPLOAD].bind(this.hook))
+        this.register(LIFE.DOWNLOAD, this.hook[HOOK.DOWNLOAD].bind(this.hook))
+        this.register(LIFE.SUCCESS, this.hook[HOOK.SUCCESS].bind(this.hook))
+        this.register(LIFE.ERROR, this.hook[HOOK.ERROR].bind(this.hook))
+        this.register(LIFE.FINISH, this.hook[HOOK.FINISH].bind(this.hook))
     }
 
     registerUserHooks(hooks) {
