@@ -1,10 +1,8 @@
 import merge from 'lodash/fp/merge';
 import { _hasProperty, _hasFiles, _objectToFormData } from '../js/helper/util';
-import { Method, LIFE } from './Fixed';
+import { Method, HOOK_NAME } from './Fixed';
 
-const nothing = () => {};
-
-export default function (EventHub, url, method = Method.GET, payload = {}, userOptions = {}, userHooks = {}) {
+export default function (HookHub, url, method = Method.GET, payload = {}, userOptions = {}) {
     const processed = processPayload(url, method, payload)
     const cancelToken = _hasProperty(userOptions, cancelToken) ? userOptions.cancelToken : null;
     const signal = ! cancelToken && _hasProperty(userOptions, signal) ? userOptions.signal : new AbortController().signal;
@@ -26,31 +24,16 @@ export default function (EventHub, url, method = Method.GET, payload = {}, userO
         onUploadProgress: (progress) => {
             if(! (payload instanceof FormData)) return
 
-            EventHub.run(LIFE.UPLOAD, {progress})
+            HookHub.run(HOOK_NAME.UPLOAD, progress)
         },
         onDownloadProgress: (progress) => {
             if(! (payload instanceof FormData)) return
 
-            EventHub.run(LIFE.DOWNLOAD, {progress})
+            HookHub.run(HOOK_NAME.DOWNLOAD, progress)
         }
     };
-
-    const defaultHooks = {
-        onBefore: nothing,
-        onStart: nothing,
-        onCancel: nothing,
-        onSuccess: nothing,
-        onError: nothing,
-        onFinish: nothing,
-    }
     
-    const options = merge(defaultOptions, userOptions)
-    const hooks = merge(defaultHooks, userHooks)
-
-    return {
-        options,
-        hooks,
-    }
+    return merge(defaultOptions, userOptions)
 }
 
 function processPayload(url, method, payload, forceFormData) {

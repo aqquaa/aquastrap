@@ -1,6 +1,6 @@
 import HookHubService from './HookHub'
+import StateHubService from './State';
 import merge from 'lodash/fp/merge';
-import State from './State';
 import { Method, HOOK_NAME, PUBLIC_EVENTS } from './Fixed';
 import { _hasFiles, _objectToFormData } from '../js/helper/util';
 import { _hasProperty } from "../js/helper/util";
@@ -11,12 +11,12 @@ export default class Aquastrap {
     constructor(requestURL = 'http://localhost', userStates = [], options = {}, hooks = {}) {
         this.requestURL = requestURL
 
-        this._stateHub = new State
-        this.state = this._stateHub.state
+        this.state = Object.assign({}, (new StateHubService)._initialState())
 
         this._userStates = userStates // [ [name, callback], ... ]
 
-        this.requestConfig = {options, hooks}
+        this.requestConfig = options
+        this.hooks = hooks
 
         this.availableHooks = Array.from(Object.values(HOOK_NAME))
         this.availableEvents = Array.from(Object.values(PUBLIC_EVENTS))
@@ -27,6 +27,10 @@ export default class Aquastrap {
         return this
     }
 
+    route(name, ...params) {
+        return this
+    }
+
     registerStates(list) { 
         this._userStates = this._userStates.length === 0 ? list : [...this._userStates, ...list]
 
@@ -34,16 +38,12 @@ export default class Aquastrap {
     }
     
     setRequestOptions(userOptions = {}) {
-        this.requestConfig = Object.assign({}, this.requestConfig, {
-            options: merge(this.requestConfig.options, userOptions)
-        })
+        this.requestConfig = Object.assign({}, merge(this.requestConfig, userOptions))
 
         return this
     }
     setRequestHooks(userHooks = {}) {
-        this.requestConfig = Object.assign({}, this.requestConfig, {
-            hooks: merge(this.requestConfig.hooks, userHooks)
-        })
+        this.hooks = Object.assign({}, merge(this.hooks, userHooks))
 
         return this
     }
@@ -65,27 +65,29 @@ export default class Aquastrap {
                 });
             })
         }
-        
-        this._stateHub.reset()
-        this.state = {...this._stateHub.state}
+
+        const stateHub = new StateHubService
+        this.state = Object.assign({}, stateHub.state)
+
+        // register user provided states to main context
         _initExtraStateRegistration(this._userStates, this)
 
-        const HookHub = new HookHubService(this._stateHub, this)
+        const HookHub = new HookHubService(stateHub, this)
 
         // last moment config & hooks overwrite
         this.setRequestOptions(config.options)
         this.setRequestHooks(config.hooks)
-        this.requestConfig = composeConfig(HookHub, this.requestURL, method, payload, this.requestConfig.options, this.requestConfig.hooks)
+        this.requestConfig = composeConfig(HookHub, this.requestURL, method, payload, this.requestConfig)
 
         // register internal state manager callbacks & user hooks
         HookHub.registerInternalHooks()
 
-        HookHub.registerUserHooks(this.requestConfig.hooks)
+        HookHub.registerUserHooks(this.hooks)
 
-        HookHub.run(HOOK_NAME.BEFORE, this.requestConfig.options)
+        HookHub.run(HOOK_NAME.BEFORE, this.requestConfig)
 
         // XHR BEGIN
-        NetworkRequest(HookHub, this.requestConfig.options);
+        NetworkRequest(HookHub, this.requestConfig);
     }
     get(payload = {}, config = {options: {}, hooks: {}}) {
         return this.submit(Method.GET, payload, config);

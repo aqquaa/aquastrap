@@ -3,53 +3,47 @@ import { HOOK_NAME } from './Fixed'
 
 export default class State {
     constructor() {
-        this.state = {...this._initialState()}
+        this.state = Object.assign({}, this._initialState())
     }
 
     _initialState() {
         return {
             busy: false,
-            result: null,
+            response: null,
+            cancelled: false,
             statusCode: null,
-            errors: {},
-            message: '',
             downloadProgress: 0,
             uploadProgress: 0,
         }
     }
 
-    reset() {
-        this.state = {...this._initialState()}
-    }
-
-    get hasValidationError() {
-        return ! this.state.busy && Object.keys(this.state.errors).length > 0
-    }
-
     [HOOK_NAME.BEFORE]() {
-        
+        // EVERYTHING NEEDED TO BE DONE HERE ALREADY DONE IN MAIN CONTEXT
+        // LEAVE IT
     }
 
     [HOOK_NAME.START]() {
         this.state.busy = true
     }
 
-    [HOOK_NAME.SUCCESS](response) {
-        this.state.busy = false
-
-        console.log('from state', response);
+    [HOOK_NAME.STATUS_CODE](code) {
+        this.state.statusCode = code
     }
 
-    [HOOK_NAME.CANCEL]() {
-        
+    [HOOK_NAME.SUCCESS](response) {
+        this.state.response = response
+    }
+
+    [HOOK_NAME.CANCEL](message) {
+        this.cancelled = true
     }
 
     [HOOK_NAME.UPLOAD](progress) {
         if(!_hasProperty(progress, 'total') || !_hasProperty(progress, 'loaded')) return
 
-        let percentage = Math.round((progress.loaded / progress.total) * 100);
+        let percentage = Math.round((progress.loaded / progress.total) * 100)
 
-        console.log(percentage);
+        this.state.downloadProgress = percentage
     }
 
     [HOOK_NAME.DOWNLOAD](progress) {
@@ -57,14 +51,14 @@ export default class State {
 
         let percentage = Math.round((progress.loaded / progress.total) * 100);
 
-        console.log(percentage);
+        this.state.uploadProgress = percentage
     }
 
-    [HOOK_NAME.ERROR]() {
-        
+    [HOOK_NAME.ERROR](response) {
+        this.state.response = response
     }
 
     [HOOK_NAME.FINISH]() {
-        
+        this.state.busy = false
     }
 }

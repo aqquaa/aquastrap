@@ -20,7 +20,7 @@ export default class Hook {
     }
 
     [HOOK_NAME.STATUS_CODE](code) {
-        // USEFUL FOR USERS TO HOOK INTO
+        this.stateHub[HOOK_NAME.STATUS_CODE].call(this.mainContext, code)
     }
 
     [HOOK_NAME.SUCCESS](response) {
@@ -29,28 +29,28 @@ export default class Hook {
         this.stateHub[HOOK_NAME.SUCCESS].call(this.mainContext, response)
     }
 
-    [HOOK_NAME.CANCEL](options) {
-        dispatch(PUBLIC_EVENTS.CANCEL, options)
+    [HOOK_NAME.CANCEL](message) {
+        dispatch(PUBLIC_EVENTS.CANCEL, message)
 
-        this.stateHub[HOOK_NAME.CANCEL].call(this.mainContext)
+        this.stateHub[HOOK_NAME.CANCEL].call(this.mainContext, message)
     }
 
     [HOOK_NAME.UPLOAD](progress) {
         dispatch(PUBLIC_EVENTS.UPLOAD, progress)
 
-        this.stateHub[HOOK_NAME.UPLOAD].call(this.mainContext)
+        this.stateHub[HOOK_NAME.UPLOAD].call(this.mainContext, progress)
     }
 
     [HOOK_NAME.DOWNLOAD](progress) {
         dispatch(PUBLIC_EVENTS.DOWNLOAD, progress)
 
-        this.stateHub[HOOK_NAME.DOWNLOAD].call(this.mainContext)
+        this.stateHub[HOOK_NAME.DOWNLOAD].call(this.mainContext, progress)
     }
 
-    [HOOK_NAME.ERROR](options) {
-        dispatch(PUBLIC_EVENTS.ERROR, options)
+    [HOOK_NAME.ERROR](response) {
+        dispatch(PUBLIC_EVENTS.ERROR, response)
 
-        this.stateHub[HOOK_NAME.ERROR].call(this.mainContext)
+        this.stateHub[HOOK_NAME.ERROR].call(this.mainContext, response)
     }
 
     [HOOK_NAME.FINISH]() {
