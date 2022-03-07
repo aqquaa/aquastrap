@@ -1,17 +1,18 @@
-import { LIFE } from './Fixed';
+import { HOOK_NAME } from './Fixed';
 import axios from 'axios';
 
-export default function (EventHub, options) {
-    console.log(options);
-
-    EventHub.run(LIFE.START, options)
+export default function (HookHub, options) {
+    HookHub.run(HOOK_NAME.START, options)
 
     axios(options)
     .then((response) => {
+        HookHub.run(HOOK_NAME.STATUS_CODE, response.status)
+        HookHub.run(HOOK_NAME.SUCCESS, response)
+
         console.log(response);
     })
     .catch((error) => {
-        console.log(error);
+        error.response && HookHub.run(HOOK_NAME.STATUS_CODE, error.response.status)
 
         if (axios.isCancel(error)) {
             console.log('Request canceled', error.message);
@@ -25,5 +26,5 @@ export default function (EventHub, options) {
             console.log(error.response.headers);
         }
     })
-    .then(_ => EventHub.run(LIFE.FINISH, {}))
+    .then(_ => HookHub.run(HOOK_NAME.FINISH, {}))
 }

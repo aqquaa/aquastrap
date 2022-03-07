@@ -1,7 +1,7 @@
-import EventManager from './Event'
+import HookHubService from './HookHub'
 import merge from 'lodash/fp/merge';
 import State from './State';
-import { Method, LIFE } from './Fixed';
+import { Method, HOOK_NAME, PUBLIC_EVENTS } from './Fixed';
 import { _hasFiles, _objectToFormData } from '../js/helper/util';
 import { _hasProperty } from "../js/helper/util";
 import NetworkRequest from "./Network";
@@ -17,6 +17,9 @@ export default class Aquastrap {
         this._userStates = userStates // [ [name, callback], ... ]
 
         this.requestConfig = {options, hooks}
+
+        this.availableHooks = Array.from(Object.values(HOOK_NAME))
+        this.availableEvents = Array.from(Object.values(PUBLIC_EVENTS))
     }
 
     url(fullUrl) {
@@ -50,11 +53,14 @@ export default class Aquastrap {
             if(userStates.length === 0) return
     
             Array.from(userStates).forEach(i => {
-                if(! Array.isArray(i) || typeof i[0] === 'undefined' || typeof i[1] === 'undefined' || typeof i[1] !== "function") return
+                let stateName = i[0]
+                let stateEvaluator = i[1]
+
+                if(! Array.isArray(i) || typeof stateName === 'undefined' || typeof stateEvaluator === 'undefined' || typeof stateEvaluator !== "function" || _hasProperty(mainContext.state, stateName)) return
                 
-                Object.defineProperty(mainContext.state, i[0], {
+                Object.defineProperty(mainContext.state, stateName, {
                     get() { 
-                        return i[1](mainContext.state)
+                        return stateEvaluator(mainContext.state)
                     }
                 });
             })
@@ -64,22 +70,22 @@ export default class Aquastrap {
         this.state = {...this._stateHub.state}
         _initExtraStateRegistration(this._userStates, this)
 
-        const EventHub = new EventManager(this._stateHub, this)
+        const HookHub = new HookHubService(this._stateHub, this)
 
         // last moment config & hooks overwrite
         this.setRequestOptions(config.options)
         this.setRequestHooks(config.hooks)
-        this.requestConfig = composeConfig(EventHub, this.requestURL, method, payload, this.requestConfig.options, this.requestConfig.hooks)
+        this.requestConfig = composeConfig(HookHub, this.requestURL, method, payload, this.requestConfig.options, this.requestConfig.hooks)
 
         // register internal state manager callbacks & user hooks
-        EventHub.registerInternalHooks()
+        HookHub.registerInternalHooks()
 
-        EventHub.registerUserHooks(this.requestConfig.hooks)
+        HookHub.registerUserHooks(this.requestConfig.hooks)
 
-        EventHub.run(LIFE.BEFORE, this.requestConfig.options)
+        HookHub.run(HOOK_NAME.BEFORE, this.requestConfig.options)
 
         // XHR BEGIN
-        NetworkRequest(EventHub, this.requestConfig.options);
+        NetworkRequest(HookHub, this.requestConfig.options);
     }
     get(payload = {}, config = {options: {}, hooks: {}}) {
         return this.submit(Method.GET, payload, config);

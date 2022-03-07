@@ -1,5 +1,5 @@
 import { _hasProperty } from "../js/helper/util";
-import { HOOK } from './Fixed'
+import { HOOK_NAME } from './Fixed'
 
 export default class State {
     constructor() {
@@ -26,19 +26,25 @@ export default class State {
         return ! this.state.busy && Object.keys(this.state.errors).length > 0
     }
 
-    [HOOK.BEFORE]() {
+    [HOOK_NAME.BEFORE]() {
         
     }
 
-    [HOOK.START]() {
+    [HOOK_NAME.START]() {
         this.state.busy = true
     }
 
-    [HOOK.CANCEL]() {
+    [HOOK_NAME.SUCCESS](response) {
+        this.state.busy = false
+
+        console.log('from state', response);
+    }
+
+    [HOOK_NAME.CANCEL]() {
         
     }
 
-    [HOOK.UPLOAD](progress) {
+    [HOOK_NAME.UPLOAD](progress) {
         if(!_hasProperty(progress, 'total') || !_hasProperty(progress, 'loaded')) return
 
         let percentage = Math.round((progress.loaded / progress.total) * 100);
@@ -46,7 +52,7 @@ export default class State {
         console.log(percentage);
     }
 
-    [HOOK.DOWNLOAD](progress) {
+    [HOOK_NAME.DOWNLOAD](progress) {
         if(!_hasProperty(progress, 'total') || !_hasProperty(progress, 'loaded')) return
 
         let percentage = Math.round((progress.loaded / progress.total) * 100);
@@ -54,15 +60,11 @@ export default class State {
         console.log(percentage);
     }
 
-    [HOOK.SUCCESS]() {
+    [HOOK_NAME.ERROR]() {
         
     }
 
-    [HOOK.ERROR]() {
-        
-    }
-
-    [HOOK.FINISH]() {
+    [HOOK_NAME.FINISH]() {
         
     }
 }

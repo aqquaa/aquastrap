@@ -6,23 +6,13 @@ export const Method = Object.freeze({
     DELETE: 'delete',
 })
 
-export const LIFE = Object.freeze({
-    BEFORE: 'before',
-    START: 'start',
-    DOWNLOAD: 'download',
-    UPLOAD: 'upload',
-    CANCEL: 'cancel',
-    SUCCESS: 'success',
-    ERROR: 'error',
-    FINISH: 'finish',
-})
-
-export const HOOK = Object.freeze({
+export const HOOK_NAME = Object.freeze({
     BEFORE: 'onBefore',
     START: 'onStart',
     DOWNLOAD: 'onDownload',
     UPLOAD: 'onUpload',
     CANCEL: 'onCancel',
+    STATUS_CODE: 'onStatusCode',
     SUCCESS: 'onSuccess',
     ERROR: 'onError',
     FINISH: 'onFinish'
