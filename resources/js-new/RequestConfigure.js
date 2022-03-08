@@ -1,11 +1,19 @@
-import merge from 'lodash/fp/merge';
 import { _hasProperty, _hasFiles, _objectToFormData } from '../js/helper/util';
 import { Method, HOOK_NAME } from './Fixed';
+import deepmerge from 'deepmerge'
 
 export default function (HookHub, url, method = Method.GET, payload = {}, userOptions = {}) {
     const processed = processPayload(url, method, payload)
+
     const cancelToken = _hasProperty(userOptions, cancelToken) ? userOptions.cancelToken : null;
-    const signal = ! cancelToken && _hasProperty(userOptions, signal) ? userOptions.signal : new AbortController().signal;
+    let signal = ! cancelToken && _hasProperty(userOptions, signal) ? signal : null;
+
+    let abortControllerInstance = null;
+
+    if(! cancelToken && ! signal) {
+        abortControllerInstance = new AbortController()
+        signal = abortControllerInstance.signal;
+    }
 
     const defaultOptions = {
         method,
@@ -32,8 +40,11 @@ export default function (HookHub, url, method = Method.GET, payload = {}, userOp
             HookHub.run(HOOK_NAME.DOWNLOAD, progress)
         }
     };
-    
-    return merge(defaultOptions, userOptions)
+
+    return {
+        options: deepmerge(defaultOptions, userOptions),
+        abortController: abortControllerInstance
+    }
 }
 
 function processPayload(url, method, payload, forceFormData) {
