@@ -6,6 +6,15 @@ export const Method = Object.freeze({
     DELETE: 'delete',
 })
 
+export const STATE = Object.freeze({
+    busy: false,
+    response: null,
+    cancelled: false,
+    statusCode: null,
+    downloadProgress: 0,
+    uploadProgress: 0,
+})
+
 export const HOOK_NAME = Object.freeze({
     BEFORE: 'onBefore',
     START: 'onStart',

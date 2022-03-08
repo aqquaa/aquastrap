@@ -1,10 +1,11 @@
 import { HOOK_NAME, PUBLIC_EVENTS } from './Fixed'
 import { dispatch } from '../js/helper/util'
+import StateHub from './State';
 
 export default class Hook {
-    constructor(stateHub, mainContext) {
-        this.stateHub = stateHub
+    constructor(mainContext) {
         this.mainContext = mainContext
+        this.stateHub = new StateHub
     }
 
     [HOOK_NAME.BEFORE](options) {
@@ -55,6 +56,8 @@ export default class Hook {
 
     [HOOK_NAME.FINISH]() {
         dispatch(PUBLIC_EVENTS.FINISH, {})
+
+        this.mainContext._cancelToken = null
 
         this.stateHub[HOOK_NAME.FINISH].call(this.mainContext)
     }

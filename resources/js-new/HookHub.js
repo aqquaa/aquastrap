@@ -3,8 +3,8 @@ import { HOOK_NAME } from "./Fixed";
 import Hook from './Hook'
 
 export default class HookHub {
-    constructor(stateHub, mainContext) {
-        this.hook = new Hook(stateHub, mainContext)
+    constructor(mainContext) {
+        this.hook = new Hook(mainContext)
         this.handlers = {}
     }
 
