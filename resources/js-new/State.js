@@ -1,20 +1,9 @@
 import { _hasProperty } from "../js/helper/util";
-import { HOOK_NAME } from './Fixed'
+import { HOOK_NAME, STATE } from './Fixed'
 
 export default class State {
     constructor() {
-        this.state = Object.assign({}, this._initialState())
-    }
-
-    _initialState() {
-        return {
-            busy: false,
-            response: null,
-            cancelled: false,
-            statusCode: null,
-            downloadProgress: 0,
-            uploadProgress: 0,
-        }
+        this.state = Object.assign({}, STATE)
     }
 
     [HOOK_NAME.BEFORE]() {
