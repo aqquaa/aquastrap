@@ -24,7 +24,7 @@ export default class State {
     }
 
     [HOOK_NAME.CANCEL](message) {
-        this.cancelled = true
+        this.state.cancelled = true
     }
 
     [HOOK_NAME.UPLOAD](progress) {

@@ -1,19 +1,27 @@
 import { _hasProperty, _hasFiles, _objectToFormData } from '../js/helper/util';
 import { Method, HOOK_NAME } from './Fixed';
-import deepmerge from 'deepmerge'
+import merge from 'lodash/fp/merge';
 
-export default function (HookHub, url, method = Method.GET, payload = {}, userOptions = {}) {
+export function _injectCancelSignal(options) {
+    const cancelToken = _hasProperty(options, 'cancelToken') ? options.cancelToken : null;
+    const signal = ! cancelToken && _hasProperty(options, 'signal') ? options.signal : null;
+    let abortControllerInstance = null;
+    if(! cancelToken && ! signal) {
+        abortControllerInstance = new AbortController;
+        options = Object.assign({}, options, {signal: abortControllerInstance.signal})
+    }
+
+    return {
+        options,
+        abortControllerInstance
+    }
+}
+
+export function _composeConfig(HookHub, url, method = Method.GET, payload = {}, userOptions = {}) {
     const processed = processPayload(url, method, payload)
 
-    const cancelToken = _hasProperty(userOptions, cancelToken) ? userOptions.cancelToken : null;
-    let signal = ! cancelToken && _hasProperty(userOptions, signal) ? signal : null;
-
-    let abortControllerInstance = null;
-
-    if(! cancelToken && ! signal) {
-        abortControllerInstance = new AbortController()
-        signal = abortControllerInstance.signal;
-    }
+    const cancelToken = _hasProperty(userOptions, 'cancelToken') ? userOptions.cancelToken : null;
+    let signal = ! cancelToken && _hasProperty(userOptions, 'signal') ? userOptions.signal : (new AbortController).signal;
 
     const defaultOptions = {
         method,
@@ -41,10 +49,7 @@ export default function (HookHub, url, method = Method.GET, payload = {}, userOp
         }
     };
 
-    return {
-        options: deepmerge(defaultOptions, userOptions),
-        abortController: abortControllerInstance
-    }
+    return merge(defaultOptions, userOptions)
 }
 
 function processPayload(url, method, payload, forceFormData) {

@@ -4,7 +4,7 @@ import { Method, HOOK_NAME, PUBLIC_EVENTS, STATE } from './Fixed';
 import { _hasFiles, _objectToFormData } from '../js/helper/util';
 import { _hasProperty } from "../js/helper/util";
 import NetworkRequest from "./Network";
-import composeConfig from './RequestConfigure';
+import { _composeConfig, _injectCancelSignal } from './RequestConfigure';
 
 export default class Aquastrap {
     constructor(requestURL = 'http://localhost', userStates = [], options = {}, hooks = {}) {
@@ -74,6 +74,11 @@ export default class Aquastrap {
     submit(method = Method.GET, payload = {}, config = {options: {}, hooks: {}}) {
         /**PRE-HOOK SETUP STAGE */
         this.resetStates()
+
+        // cancel token inject if not provided
+        const injected = _injectCancelSignal(config.options)
+        config.options = injected.options
+        this._cancelToken = injected.abortControllerInstance
         
         // last moment config & hooks overwrite
         this.setRequestOptions(config.options)
@@ -81,10 +86,7 @@ export default class Aquastrap {
 
         const HookHub = new HookHubService(this)
         
-        const composedConfig = composeConfig(HookHub, this.requestURL, method, payload, this.requestConfig) // // compose the final config
-
-        this.requestConfig = Object.assign({}, composedConfig.options)
-        this._cancelToken = Object.assign({}, composedConfig.abortController)
+        this.requestConfig = _composeConfig(HookHub, this.requestURL, method, payload, this.requestConfig) // compose the final config
 
         HookHub.registerInternalHooks()
         HookHub.registerUserHooks(this.hooks)
@@ -103,7 +105,10 @@ export default class Aquastrap {
     }
 
     cancel() {
-        this._cancelToken && this._cancelToken.abort()
+        if(this.state.busy && this._cancelToken) {
+            this._cancelToken.abort()
+            this._cancelToken = null
+        }
     }
 
     resetStates() {
