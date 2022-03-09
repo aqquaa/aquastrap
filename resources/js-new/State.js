@@ -21,6 +21,7 @@ export default class State {
 
     [HOOK_NAME.SUCCESS](response) {
         this.state.response = response
+        this.state.result = response.data
     }
 
     [HOOK_NAME.CANCEL](message) {

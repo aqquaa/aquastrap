@@ -9,6 +9,7 @@ export const Method = Object.freeze({
 export const STATE = Object.freeze({
     busy: false,
     response: null,
+    result: null,
     cancelled: false,
     statusCode: null,
     downloadProgress: 0,

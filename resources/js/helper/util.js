@@ -8,6 +8,10 @@ export function _hasProperty(obj, prop) {
     return _has.call(obj, prop)
 };
 
+export function _isObjEmpty(obj) {
+    return obj && Object.keys(obj).length === 0
+}
+
 export function _findComponentById(id) {
     const componentIndex = window._aquastrap.component.findIndex(c => c.id === id);
     if(componentIndex === -1) {

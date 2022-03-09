@@ -15,7 +15,11 @@ export default function (HookHub, options) {
             return
         }
 
-        error.response && HookHub.run(HOOK_NAME.STATUS_CODE, error.response.status)
+        if(error.response) {
+            HookHub.run(HOOK_NAME.STATUS_CODE, error.response.status)
+            HookHub.run(HOOK_NAME.ERROR, error.response)
+            return
+        }
 
         HookHub.run(HOOK_NAME.ERROR, error)
     })

@@ -22,19 +22,23 @@ export default class HookHub {
         this.register(H.FINISH,     this.hook[H.FINISH].bind(this.hook))
     }
 
-    registerUserHooks(hooks) {
+    registerUserHooks(hooksList) {
         const H = HOOK_NAME 
-        Object.values(HOOK_NAME).forEach(NAME => { if(! _hasProperty(hooks, NAME)) hooks[NAME] = () => {/*NOTHING*/} })
-    
-        this.register(H.BEFORE,     hooks[H.BEFORE])
-        this.register(H.START,      hooks[H.START])
-        this.register(H.STATUS_CODE, hooks[H.STATUS_CODE])
-        this.register(H.CANCEL,     hooks[H.CANCEL])
-        this.register(H.UPLOAD,     hooks[H.UPLOAD])
-        this.register(H.DOWNLOAD,   hooks[H.DOWNLOAD])
-        this.register(H.SUCCESS,    hooks[H.SUCCESS])
-        this.register(H.ERROR,      hooks[H.ERROR])
-        this.register(H.FINISH,     hooks[H.FINISH])
+        const self = this
+
+        hooksList.forEach(hooks => {
+            Object.values(HOOK_NAME).forEach(NAME => { if(! _hasProperty(hooks, NAME)) hooks[NAME] = () => {/*NOTHING*/} })
+        
+            self.register(H.BEFORE,     hooks[H.BEFORE])
+            self.register(H.START,      hooks[H.START])
+            self.register(H.STATUS_CODE, hooks[H.STATUS_CODE])
+            self.register(H.CANCEL,     hooks[H.CANCEL])
+            self.register(H.UPLOAD,     hooks[H.UPLOAD])
+            self.register(H.DOWNLOAD,   hooks[H.DOWNLOAD])
+            self.register(H.SUCCESS,    hooks[H.SUCCESS])
+            self.register(H.ERROR,      hooks[H.ERROR])
+            self.register(H.FINISH,     hooks[H.FINISH])
+        })
     }
 
     register(event, handler) {

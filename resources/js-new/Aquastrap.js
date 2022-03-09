@@ -1,7 +1,7 @@
 import HookHubService from './HookHub'
 import merge from 'lodash/fp/merge';
 import { Method, HOOK_NAME, PUBLIC_EVENTS, STATE } from './Fixed';
-import { _hasFiles, _objectToFormData } from '../js/helper/util';
+import { _hasFiles, _objectToFormData, _isObjEmpty } from '../js/helper/util';
 import { _hasProperty } from "../js/helper/util";
 import NetworkRequest from "./Network";
 import { _composeConfig, _injectCancelSignal } from './RequestConfigure';
@@ -15,7 +15,7 @@ export default class Aquastrap {
         this._userStates = userStates // [ [name, callback], ... ]
 
         this.requestConfig = options
-        this.hooks = hooks
+        this.hooks = _isObjEmpty(hooks) ? [] : [hooks]
 
         this._cancelToken = null
 
@@ -65,8 +65,14 @@ export default class Aquastrap {
 
         return this
     }
+    // always overwrite all hooks callbacks
     setRequestHooks(userHooks = {}) {
-        this.hooks = Object.assign({}, merge(this.hooks, userHooks))
+        this.hooks = [Object.assign({}, userHooks)]
+
+        return this
+    }
+    mergeRequestHooks(userHooks = {}) {
+        this.hooks = [...this.hooks, userHooks]
 
         return this
     }
@@ -79,10 +85,10 @@ export default class Aquastrap {
         const injected = _injectCancelSignal(config.options)
         config.options = injected.options
         this._cancelToken = injected.abortControllerInstance
-        
+
         // last moment config & hooks overwrite
         this.setRequestOptions(config.options)
-        this.setRequestHooks(config.hooks)
+        _isObjEmpty(config.hooks) || this.mergeRequestHooks(config.hooks)
 
         const HookHub = new HookHubService(this)
         
