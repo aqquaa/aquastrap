@@ -19,7 +19,14 @@ export default class LaraAquastrap {
                 this.localState.message = response?.data?.message || ''
             },
             onError: (response) => {
-                this.localState.errors = response?.data?.errors || {}
+                if(response?.data?.errors) {
+                    let keyed = {}
+
+                    Object.entries(response.data.errors)
+                    .forEach(([field, msg]) => keyed[field] = msg[0])
+
+                    this.localState.errors = keyed
+                }
 
                 this.localState.message = response?.data?.message || ''
                 this.localState.message ||= response instanceof Error ? response.message : ''
@@ -42,17 +49,26 @@ export default class LaraAquastrap {
             isValidationError: this.aquastrap.state.statusCode === 422 && ! this.aquastrap.state.busy && ! _isObjEmpty(this.localState.errors)
         })
     }
-    
-    hasFormError(field) {
 
+    setFormError(field, value = null) {
+        if(field instanceof Object && typeof field === 'object') {
+            this.localState.errors = Object.assign({}, this.localState.errors, field)
+        }
+        
+        if(typeof field === 'string') {
+            this.localState.errors[field] = value
+        }
     }
 
-    setFormError() {
+    clearFormError(...fields) {
+        if(! fields.length) {
+            this.localState.errors = {}
+            return
+        }
 
-    }
-
-    clearFormError() {
-
+        fields.forEach(f => {
+            _hasProperty(this.localState.errors, f) && delete this.localState.errors[f]
+        })
     }
 
     resetStates() {
