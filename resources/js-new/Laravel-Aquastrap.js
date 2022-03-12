@@ -1,4 +1,4 @@
-import { _hasProperty, _isObjEmpty, mimeTypeToExt } from "../js/helper/util";
+import { _hasProperty, _isObjEmpty, mimeTypeToExt, dispatch } from "../js/helper/util";
 import Aquastrap from "./Aquastrap";
 
 const STATES = Object.freeze({
@@ -27,21 +27,12 @@ export default class LaraAquastrap {
         .setRequestHooks({
             onBefore: this.resetStates.bind(this),
             onSuccess: async (res) => {
-                let response = await _formatResponse(res)
-                if(! response) return
-
-                this.localState.message = response?.message
-                this.localState.message ||= ''
+                _processResponse(res, this.localState)
 
                 _handleBlobResponse(res)
             },
             onError: async (res) => {
-                if(res instanceof Error) {
-                    this.localState.message = res.message
-                    return
-                }
-
-                let response = await _formatResponse(res)
+                let response = _processResponse(res, this.localState)
                 if(! response) return
 
                 if(response?.errors) {
@@ -52,8 +43,6 @@ export default class LaraAquastrap {
 
                     this.localState.errors = keyed
                 }
-
-                this.localState.message = response?.message
             }
         })
         .registerStates([
@@ -140,19 +129,6 @@ const _isJsonResponse = (response) => {
     return false;
 }
 
-const _formatResponse = async(res) => {
-    if(! res?.data) return null
-
-    let response = res.data
-    if(response instanceof Blob && response.type === 'application/json') {
-        let raw = await response.text()
-        response = JSON.parse(raw)
-        return response
-    }
-
-    return response
-}
-
 function _handleBlobResponse(response) {
     if(_isJsonResponse(response)) return
 
@@ -177,4 +153,46 @@ function _handleBlobResponse(response) {
     window.URL.revokeObjectURL(url);
 
     return;
+}
+
+async function _processResponse(response, stateHandler) {
+    const _notifiy = (response) => {
+        const notification = response?.headers['x-aqua-notification'];
+    
+        if(! notification) return;
+    
+        const parsed = JSON.parse(notification);
+    
+        if (parsed && _hasProperty(parsed, 'type') && _hasProperty(parsed, 'message')) {
+            dispatch('aqua.notification', parsed);
+        }
+    }
+
+    const _formatResponse = async(res) => {
+        if(! res?.data) return null
+    
+        let response = res.data
+        if(response instanceof Blob && response.type === 'application/json') {
+            let raw = await response.text()
+            response = JSON.parse(raw)
+            return response
+        }
+    
+        return response
+    }
+
+    _notifiy(response)
+
+    if(response instanceof Error) {
+        stateHandler.message = response.message
+        return null
+    }
+    
+    let res = await _formatResponse(response)
+    if(! res) return null
+
+    stateHandler.message = res?.message
+    stateHandler.message ||= ''
+
+    return res
 }
