@@ -29,22 +29,17 @@ export function _composeConfig(HookHub, url, method = Method.GET, payload = {}, 
         data: method === Method.GET ? {} : processed.payload,
         ...( cancelToken ? {cancelToken} : {signal} ),
         headers: {
-            // Accept: '*/*',
-            Accept: "text/html, application/json",
-            ...(!(payload instanceof FormData) && {
-                "Content-Type": "application/json",
-            }),
-            "X-Requested-With": "XMLHttpRequest",
-            // "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
+            Accept: '*/*',
+            // Accept: "application/json",
+            "Content-Type": payload instanceof FormData ? "multipart/form-data" : "application/json",
+            "X-Requested-With": "XMLHttpRequest"
         },
         onUploadProgress: (progress) => {
-            if(! (payload instanceof FormData)) return
+            if(! (processed.payload instanceof FormData)) return
 
             HookHub.run(HOOK_NAME.UPLOAD, progress)
         },
         onDownloadProgress: (progress) => {
-            if(! (payload instanceof FormData)) return
-
             HookHub.run(HOOK_NAME.DOWNLOAD, progress)
         }
     };

@@ -1,4 +1,4 @@
-import { _hasProperty, _isObjEmpty } from "../js/helper/util";
+import { _hasProperty, _isObjEmpty, mimeTypeToExt } from "../js/helper/util";
 import Aquastrap from "./Aquastrap";
 
 const STATES = Object.freeze({
@@ -17,6 +17,8 @@ export default class LaraAquastrap {
             onBefore: this.resetStates.bind(this),
             onSuccess: (response) => {
                 this.localState.message = response?.data?.message || ''
+
+                _handleBlobResponse(response)
             },
             onError: (response) => {
                 if(response?.data?.errors) {
@@ -105,4 +107,45 @@ export default class LaraAquastrap {
     post(payload = {}, config = {options: {}, hooks: {}}) {
         return this.aquastrap.post(payload, config)
     }
+
+    download(payload = {}) {
+        return this.aquastrap.post(payload, {options: {
+            responseType: 'blob'
+        }, hooks: {}})
+    }
+}
+
+const _isJsonResponse = (response) => {
+    const contentType = response.headers['content-type'];
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+        return true;
+    }
+
+    return false;
+}
+
+function _handleBlobResponse(response) {
+    if(_isJsonResponse(response)) return
+
+    const defaultMime = "application/octet-stream";
+    const contentType = response.headers["content-type"] || defaultMime;
+    const contentDisposition = response.headers['content-disposition'];
+
+    const suppliedFilename = contentDisposition ? contentDisposition.split('filename=')[1] : '';
+
+    const filename = suppliedFilename !== '""' 
+                    ? suppliedFilename.replace(/\s+/g, '-').replace(/\"/g, '')
+                    : 'download' + mimeTypeToExt(contentType.split(';')[0]);
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+
+    return;
 }

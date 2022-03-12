@@ -29,19 +29,25 @@ export default class State {
     }
 
     [HOOK_NAME.UPLOAD](progress) {
-        if(!_hasProperty(progress, 'total') || !_hasProperty(progress, 'loaded')) return
+        let total = progress?.total
+        let loaded = progress?.loaded
 
-        let percentage = Math.round((progress.loaded / progress.total) * 100)
+        if(! total || !loaded) return
+        
+        let percentage = Math.round((loaded / total) * 100)
 
-        this.state.downloadProgress = percentage
+        this.state.uploadProgress = percentage
     }
 
     [HOOK_NAME.DOWNLOAD](progress) {
-        if(!_hasProperty(progress, 'total') || !_hasProperty(progress, 'loaded')) return
+        let total = progress?.total
+        let loaded = progress?.loaded
 
-        let percentage = Math.round((progress.loaded / progress.total) * 100);
+        if(! total || !loaded) return
+        
+        let percentage = Math.round((loaded / total) * 100)
 
-        this.state.uploadProgress = percentage
+        this.state.downloadProgress = percentage
     }
 
     [HOOK_NAME.ERROR](response) {

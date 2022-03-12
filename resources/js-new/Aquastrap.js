@@ -60,7 +60,7 @@ export default class Aquastrap {
         return this
     }
     
-    setRequestOptions(userOptions = {}) {
+    mergeRequestOptions(userOptions = {}) {
         this.requestConfig = Object.assign({}, merge(this.requestConfig, userOptions))
 
         return this
@@ -77,31 +77,32 @@ export default class Aquastrap {
         return this
     }
 
-    submit(method = Method.GET, payload = {}, config = {options: {}, hooks: {}}) {
+    submit(method = Method.GET, payload = {}, config = {}) {
+        const {options = {}, hooks = {}} = config
+
         /**PRE-HOOK SETUP STAGE */
         this.resetStates()
 
         // cancel token inject if not provided
-        const injected = _injectCancelSignal(config.options)
-        config.options = injected.options
+        const injected = _injectCancelSignal(options)
         this._cancelToken = injected.abortControllerInstance
 
-        // last moment config & hooks overwrite
-        this.setRequestOptions(config.options)
-        _isObjEmpty(config.hooks) || this.mergeRequestHooks(config.hooks)
+        // last moment config & hooks
+        const finalRqstConfig = Object.assign({}, merge(this.requestConfig, injected.options))
+        const finalHooks = _isObjEmpty(hooks) ? [...this.hooks] : [...this.hooks, hooks]
 
         const HookHub = new HookHubService(this)
         
-        this.requestConfig = _composeConfig(HookHub, this.requestURL, method, payload, this.requestConfig) // compose the final config
+        const composedConfig = _composeConfig(HookHub, this.requestURL, method, payload, finalRqstConfig) // compose the final config
 
         HookHub.registerInternalHooks()
-        HookHub.registerUserHooks(this.hooks)
+        HookHub.registerUserHooks(finalHooks)
 
         /**REALM OF HOOKS BEGIN */
-        HookHub.run(HOOK_NAME.BEFORE, this.requestConfig)
+        HookHub.run(HOOK_NAME.BEFORE, composedConfig)
 
         // XHR BEGIN
-        NetworkRequest(HookHub, this.requestConfig);
+        NetworkRequest(HookHub, composedConfig);
     }
     get(payload = {}, config = {options: {}, hooks: {}}) {
         return this.submit(Method.GET, payload, config);
