@@ -13,25 +13,47 @@ export default class LaraAquastrap {
         this.aquastrap = new Aquastrap()
 
         this.aquastrap
+        .mergeRequestOptions({
+            headers: {
+                ...(
+                    document.querySelector('meta[name="csrf-token"]') &&
+                    {
+                        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+                    }
+                )
+            },
+            responseType: 'blob'
+        })
         .setRequestHooks({
             onBefore: this.resetStates.bind(this),
-            onSuccess: (response) => {
-                this.localState.message = response?.data?.message || ''
+            onSuccess: async (res) => {
+                let response = await _formatResponse(res)
+                if(! response) return
 
-                _handleBlobResponse(response)
+                this.localState.message = response?.message
+                this.localState.message ||= ''
+
+                _handleBlobResponse(res)
             },
-            onError: (response) => {
-                if(response?.data?.errors) {
+            onError: async (res) => {
+                if(res instanceof Error) {
+                    this.localState.message = res.message
+                    return
+                }
+
+                let response = await _formatResponse(res)
+                if(! response) return
+
+                if(response?.errors) {
                     let keyed = {}
 
-                    Object.entries(response.data.errors)
+                    Object.entries(response.errors)
                     .forEach(([field, msg]) => keyed[field] = msg[0])
 
                     this.localState.errors = keyed
                 }
 
-                this.localState.message = response?.data?.message || ''
-                this.localState.message ||= response instanceof Error ? response.message : ''
+                this.localState.message = response?.message
             }
         })
         .registerStates([
@@ -107,12 +129,6 @@ export default class LaraAquastrap {
     post(payload = {}, config = {options: {}, hooks: {}}) {
         return this.aquastrap.post(payload, config)
     }
-
-    download(payload = {}) {
-        return this.aquastrap.post(payload, {options: {
-            responseType: 'blob'
-        }, hooks: {}})
-    }
 }
 
 const _isJsonResponse = (response) => {
@@ -122,6 +138,19 @@ const _isJsonResponse = (response) => {
     }
 
     return false;
+}
+
+const _formatResponse = async(res) => {
+    if(! res?.data) return null
+
+    let response = res.data
+    if(response instanceof Blob && response.type === 'application/json') {
+        let raw = await response.text()
+        response = JSON.parse(raw)
+        return response
+    }
+
+    return response
 }
 
 function _handleBlobResponse(response) {
