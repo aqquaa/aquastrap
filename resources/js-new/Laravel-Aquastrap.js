@@ -21,18 +21,17 @@ export default class LaraAquastrap {
                         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
                     }
                 )
-            },
-            responseType: 'blob'
+            }
         })
         .setRequestHooks({
             onBefore: this.resetStates.bind(this),
             onSuccess: async (res) => {
-                _processResponse(res, this.localState)
+                await _processResponse(res, this.localState)
 
                 _handleBlobResponse(res)
             },
             onError: async (res) => {
-                let response = _processResponse(res, this.localState)
+                let response = await _processResponse(res, this.localState)
                 if(! response) return
 
                 if(response?.errors) {
@@ -52,8 +51,10 @@ export default class LaraAquastrap {
             ]
         ])
 
+        this.aquastrap.availableAquastrapEvents = [...this.aquastrap.availableAquastrapEvents, 'notification']
+
         this.availableHooks = this.aquastrap.availableHooks
-        this.availableEvents = this.aquastrap.availableEvents
+        this.availableEvents = [...this.aquastrap.availableEvents, 'aquastrap:onNotification']
     }
 
     get state() {
@@ -118,6 +119,12 @@ export default class LaraAquastrap {
     post(payload = {}, config = {options: {}, hooks: {}}) {
         return this.aquastrap.post(payload, config)
     }
+
+    download(payload = {}) {
+        return this.aquastrap.post(payload, {options: {
+            responseType: 'blob'
+        }, hooks: {}})
+    }
 }
 
 const _isJsonResponse = (response) => {
@@ -164,7 +171,7 @@ async function _processResponse(response, stateHandler) {
         const parsed = JSON.parse(notification);
     
         if (parsed && _hasProperty(parsed, 'type') && _hasProperty(parsed, 'message')) {
-            dispatch('aqua.notification', parsed);
+            dispatch('aquastrap:notification', parsed);
         }
     }
 
