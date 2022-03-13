@@ -104,14 +104,6 @@ export default class LaraAquastrap {
         this.aquastrap.cancel()
     }
 
-    on(event, callback) {
-        this.aquastrap.on(event, callback)
-    }
-
-    off(event, callback) {
-        this.aquastrap.off(event, callback)
-    }
-
     get(payload = {}, config = {options: {}, hooks: {}}) {
         return this.aquastrap.get(payload, config)
     }
@@ -171,7 +163,7 @@ async function _processResponse(response, stateHandler) {
         const parsed = JSON.parse(notification);
     
         if (parsed && _hasProperty(parsed, 'type') && _hasProperty(parsed, 'message')) {
-            dispatch('aquastrap:notification', parsed);
+            dispatch('aquastrap:onNotification', parsed);
         }
     }
 
