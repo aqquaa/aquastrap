@@ -1,5 +1,5 @@
 import { _hasProperty, _isObjEmpty, mimeTypeToExt, dispatch } from "../js/helper/util";
-import Aquastrap from "./Aquastrap";
+import Aquastrap from "./Aquastrap/Aquastrap";
 
 const STATES = Object.freeze({
     errors: {},

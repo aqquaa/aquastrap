@@ -1,4 +1,4 @@
-import Aquastrap from './Aquastrap'
+import Aquastrap from './Aquastrap/Aquastrap'
 import LaraAquastrap from './Laravel-Aquastrap'
 
 window._Aquastrap = Aquastrap

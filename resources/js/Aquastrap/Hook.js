@@ -1,5 +1,5 @@
 import { HOOK_NAME, PUBLIC_EVENTS } from './Fixed'
-import { dispatch } from './helper/util'
+import { dispatch } from './../helper/util'
 import StateHub from './State';
 
 export default class Hook {

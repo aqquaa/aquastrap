@@ -1,4 +1,4 @@
-import { _hasProperty } from "./helper/util";
+import { _hasProperty } from "./../helper/util";
 import { HOOK_NAME } from "./Fixed";
 import Hook from './Hook'
 

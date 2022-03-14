@@ -1,4 +1,4 @@
-import { _hasProperty } from "./helper/util";
+import { _hasProperty } from "./../helper/util";
 import { HOOK_NAME, STATE } from './Fixed'
 
 export default class State {
