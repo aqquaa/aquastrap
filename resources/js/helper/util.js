@@ -1,7 +1,3 @@
-import { Method } from './../helper/types';
-import * as qs from 'qs'
-import deepmerge from 'deepmerge'
-
 export function _hasProperty(obj, prop) {
     const _has = Object.prototype.hasOwnProperty;
 
@@ -10,20 +6,6 @@ export function _hasProperty(obj, prop) {
 
 export function _isObjEmpty(obj) {
     return obj && Object.keys(obj).length === 0
-}
-
-export function _findComponentById(id) {
-    const componentIndex = window._aquastrap.component.findIndex(c => c.id === id);
-    if(componentIndex === -1) {
-        // console.error('component not found', {component: id});
-
-        throw new Error('Aquastrap component not found');
-    }
-
-    return {
-        index: componentIndex,
-        component: window._aquastrap.component[componentIndex]
-    };
 }
 
 export function _hasFiles(data) {
@@ -80,39 +62,6 @@ function append(form, key, value) {
 
 export function hrefToUrl(href) {
     return new URL(href.toString(), window.location.toString())
-}
-
-export function _mergeDataIntoQueryString(
-    method,
-    href,
-    data,
-) {
-    const hasHost = href.toString().includes('http')
-    const hasAbsolutePath = hasHost || href.toString().startsWith('/')
-    const hasRelativePath = !hasAbsolutePath && !href.toString().startsWith('#') && !href.toString().startsWith('?')
-    const hasSearch = href.toString().includes('?') || (method === Method.GET && Object.keys(data).length)
-    const hasHash = href.toString().includes('#')
-
-    const url = new URL(href.toString(), 'http://localhost')
-
-    if (method === Method.GET && Object.keys(data).length) {
-        url.search = qs.stringify(deepmerge(qs.parse(url.search, { ignoreQueryPrefix: true }), data), {
-            encodeValuesOnly: true,
-            arrayFormat: 'brackets',
-        })
-        data = {}
-    }
-
-    return [
-        [
-            hasHost ? `${url.protocol}//${url.host}` : '',
-            hasAbsolutePath ? url.pathname : '',
-            hasRelativePath ? url.pathname.substring(1) : '',
-            hasSearch ? url.search : '',
-            hasHash ? url.hash : '',
-        ].join(''),
-        data,
-    ]
 }
 
 export function mimeTypeToExt(mime) {

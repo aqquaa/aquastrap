@@ -4,10 +4,8 @@ let mix = require('laravel-mix')
 
 mix
   .setPublicPath('dist')
-  // .js('resources/js/index.js', 'js')
-  // .js('resources/js/store.js', 'js')
-  .js('resources/js-new/index.js', 'js')
-  .copy([
-      'dist/js/index.js',
-  ], './../../test/disposable/test-aquastrap/index.js');
-  // .version();
+  .js('resources/js/index.js', 'js')
+  // .copy([
+  //     'dist/js/index.js',
+  // ], './../../onboarding/public/assets/js/index.js');
+  .version();

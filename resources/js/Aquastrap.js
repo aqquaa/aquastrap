@@ -1,8 +1,8 @@
 import HookHubService from './HookHub'
 import merge from 'lodash/fp/merge';
 import { Method, HOOK_NAME, PUBLIC_EVENTS, STATE } from './Fixed';
-import { _hasFiles, _objectToFormData, _isObjEmpty } from '../js/helper/util';
-import { _hasProperty } from "../js/helper/util";
+import { _hasFiles, _objectToFormData, _isObjEmpty } from './helper/util';
+import { _hasProperty } from "./helper/util";
 import NetworkRequest from "./Network";
 import { _composeConfig, _injectCancelSignal } from './RequestConfigure';
 

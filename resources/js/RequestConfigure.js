@@ -1,4 +1,4 @@
-import { _hasProperty, _hasFiles, _objectToFormData } from '../js/helper/util';
+import { _hasProperty, _hasFiles, _objectToFormData } from './helper/util';
 import { Method, HOOK_NAME } from './Fixed';
 import merge from 'lodash/fp/merge';
 

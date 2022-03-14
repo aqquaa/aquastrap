@@ -26,7 +26,8 @@ class TooManyRequestsException extends Exception
         $this->minutesUntilAvailable = ceil($this->secondsUntilAvailable / 60);
 
         parent::__construct(sprintf(
-            'Too many requests from [%s] to method [%s] on component: [%s]. Retry in %d seconds.',
+            'Too many requests. Retry in %d seconds.',
+            // 'Too many requests from [%s] to method [%s] on component: [%s]. Retry in %d seconds.',
             $this->ip,
             $this->method,
             $this->component,

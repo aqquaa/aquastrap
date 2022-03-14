@@ -51,8 +51,6 @@ export default class LaraAquastrap {
             ]
         ])
 
-        this.aquastrap.availableAquastrapEvents = [...this.aquastrap.availableAquastrapEvents, 'notification']
-
         this.availableHooks = this.aquastrap.availableHooks
         this.availableEvents = [...this.aquastrap.availableEvents, 'aquastrap:onNotification']
     }
@@ -95,8 +93,15 @@ export default class LaraAquastrap {
         return this
     }
 
-    route(name, ...args) {
-        this.aquastrap.url('http://test.site')
+    route(...args) {
+        let url = undefined
+        try {
+            url = route(...args)
+        } catch(err) {
+            url = this.aquastrap.requestURL
+        }
+
+        this.aquastrap.url(url)
         return this
     }
 

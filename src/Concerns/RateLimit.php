@@ -1,6 +1,6 @@
 <?php
 
-namespace Aqua\Aquastrap\Traits;
+namespace Aqua\Aquastrap\Concerns;
 
 use Aqua\Aquastrap\Exceptions\TooManyRequestsException;
 use Illuminate\Support\Facades\RateLimiter;
