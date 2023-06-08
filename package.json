@@ -1,25 +1,27 @@
 {
-    "private": true,
+    "name": "aquastrap",
+    "version": "1.0.0",
+    "private": false,
+    "type": "module",
+    "module": "./dist/aquastrap.js",
     "scripts": {
-        "dev": "npm run development",
-        "development": "mix",
-        "watch": "mix watch",
-        "watch-poll": "mix watch -- --watch-options-poll=1000",
-        "hot": "mix watch --hot",
-        "prod": "npm run production",
-        "production": "mix --production"
+        "dev": "vite",
+        "build": "vite build --minify",
+        "preview": "vite preview"
     },
     "devDependencies": {
-        "browser-sync": "^2.27.4",
-        "browser-sync-webpack-plugin": "2.3.0",
-        "laravel-mix": "^6.0.23",
         "prettier": "^2.5.1"
     },
     "dependencies": {
-        "@nx-js/observer-util": "^4.2.2",
-        "axios": "^0.26.0",
-        "deepmerge": "^4.2.2",
+        "axios": "^1.2",
+        "deepmerge": "^4.3",
         "lodash": "^4.17.21",
-        "qs": "^6.10.1"
-    }
+        "qs": "^6.11",
+        "vite": "^4.2.0",
+        "vite-plugin-banner": "^0.7.0"
+    },
+    "files": [
+        "dist",
+        "src"
+    ]
 }
