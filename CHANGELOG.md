@@ -1,5 +1,26 @@
 # Changelog
 
+## v3.1.1-beta.1 - 2023-06-09
+
+### added
+- vite
+- minimal require
+
+## v3.1.0-beta.1 - 2023-06-05
+
+### added
+- laravel 10 support
+
+## v3.0.0-beta.1 - 2022-03-14
+
+### added
+- js helper exposes ziggy
+- processing renammed to busy
+- downloadProgress uploadProgress
+
+### removed
+- **no support for auto method request
+
 ## v2.0.0-beta.1 - 2022-02-23
 
 ### fixed
