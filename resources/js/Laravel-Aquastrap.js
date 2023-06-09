@@ -1,5 +1,5 @@
 import { _hasProperty, _isObjEmpty, mimeTypeToExt, dispatch } from "../js/helper/util";
-import Aquastrap from "./Aquastrap/Aquastrap";
+import { AquaRequest } from 'aquarequest'
 
 const STATES = Object.freeze({
     errors: {},
@@ -10,7 +10,7 @@ export default class LaraAquastrap {
     constructor() {
         this.localState = Object.assign({}, STATES)
 
-        this.aquastrap = new Aquastrap()
+        this.aquastrap = new AquaRequest()
 
         this.aquastrap
         .mergeRequestOptions({

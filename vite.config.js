@@ -1,13 +1,15 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
-import vitePluginBanner from 'vite-plugin-banner';
 import { writeFile } from 'fs/promises';
 import crypto from 'node:crypto'
+import pkg from './package.json'
+
+const packageName = pkg.name.charAt(0).toUpperCase() + pkg.name.slice(1)
 
 export function createBanner() {
     return `/**
-   * Aquastrap
-   * version: v1.0.0
+   * ${packageName}
+   * version: ${pkg.version}
    * 
    * Copyright (c) itsrav.dev
    *
@@ -21,19 +23,20 @@ export function createBanner() {
 export default defineConfig({
   build: {
     rollupOptions: {
-        input: resolve(__dirname, 'resources/js/index.js')
+      output: {
+        footer: createBanner()
+      }
     },
     outDir: './dist/js',
     minify: 'esbuild',
     lib: {
       entry: resolve(__dirname, 'resources/js/index.js'),
-      name: 'Aquastrap',
-      fileName: 'aquastrap',
+      name: packageName,
+      fileName: pkg.name,
       formats: ['es']
     }
   },
   plugins: [
-    vitePluginBanner(createBanner()),
     {
         name: 'generate-build-id',
         apply: 'build',
